@@ -69,9 +69,9 @@ double Blob::getCenter(){ return center; }
 
 unsigned int Blob::getMinThreshold(){ return minThresh; }
 
-unsigned int Blob::getMinDistance(){ return minDist; }
+unsigned int Blob::getMinDistance(){ return minDistance; }
 
-unsigned int Blob::getXcheck(){ return xCheck; }
+unsigned int Blob::getXCheck(){ return xCheck; }
 
 unsigned int Blob::getYCheck(){ return yCheck; }
 
@@ -83,8 +83,8 @@ void Blob::setMinThreshold(unsigned int _minThresh){ minThresh = _minThresh; }
 
 void Blob::setMinDistance(unsigned int _minDist){ minDist = _minDist; }
 
-void Blob::setXCheck(unsigned int _xCheck){ xCheck = _xCheck; }
+void Blob::getXCheck(unsigned int _xCheck){ xCheck = _xCheck; }
 
-void Blob::setYCheck(unsigned int _yCheck){ yCheck = _yCheck; }
+void Blob::getYCheck(unsigned int _yCheck){ yCheck = _yCheck; }
 
 void Blob::setImage(cv::Mat * _image){ image = _image; }

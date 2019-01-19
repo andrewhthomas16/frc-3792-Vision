@@ -26,8 +26,8 @@ public:
 
     void setMinThreshold(unsigned int _minThresh);// Setters
     void setMinDistance(unsigned int _minDist);
-    void setXCheck(unsigned int _xCheck);
-    void setYCheck(unsigned int _yCheck);
+    void getXCheck(unsigned int _xCheck);
+    void getYCheck(unsigned int _yCheck);
     void setImage(cv::Mat * _image);
 
 private:

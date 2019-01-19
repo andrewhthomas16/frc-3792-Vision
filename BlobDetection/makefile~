@@ -1,0 +1,16 @@
+a.out:
+	g++ `pkg-config --cflags --libs opencv` *.cpp
+
+run:
+	./a.out
+r:
+	./a.out
+
+clean:
+	rm a.out
+c:
+	rm a.out
+
+reset:
+	rm a.out
+	g++ `pkg-config --cflags --libs opencv` *.cpp
