@@ -1,0 +1,113 @@
+// blobDetection.cpp
+
+#include <iostream>
+#include <opencv2/opencv.hpp>
+#include "Blob.h"
+#include <ctime>
+
+void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
+void maintenance(cv::Mat & image, cv::String windowName);
+
+const bool test = true;
+
+int main(int argv, char ** argc)
+{
+    cv::VideoCapture cap(0);
+    cap.set(cv::CAP_PROP_BUFFERSIZE, 5);
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 352);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 240);
+    cv::Mat * image = new cv::Mat();
+    cv::Mat image2;
+    
+    if(!cap.isOpened())
+    {
+        std::cout << "Video camera was not found." << std::endl;
+        return -1;
+    }
+    
+    cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter";
+    double fps = 0, center;
+    Blob blob(image);
+    blob.setMinThreshold(2);
+    
+    if(test)
+    {
+        cv::namedWindow(windowNameRaw);
+        cv::namedWindow(windowNameAfter);
+    }
+    
+    while(true)
+    {
+        //image = cv::imread("/home/student/Projects/C++/OpenCV/Pictures/2019VisionImages/CargoSideStraightDark72in.jpg");
+        cap >> *image;
+        if(test)
+            cv::imshow(windowNameRaw, *image);
+        
+	// Check for failure
+        if(image->empty())
+        {
+            std::cout << "Could not open or find the image" << std::endl;
+            return -1;
+        }
+        
+        //image = maintenance(image, windowName);
+                
+        // Filter image based off of a lower and upper Range of color.
+        // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
+        filter(cv::Scalar(70, 23, 50), cv::Scalar(100, 255, 255), *image, *image);
+        
+        // Blur image to get rid of the bad data points.
+        //cv::GaussianBlur(image, image, cv::Size(9, 9), 2, 2);
+
+        std::cout << blob.calcCenter() << std::endl;
+        
+        cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
+	
+        if(test)// Show image.
+        {
+            cv::imshow(windowNameAfter, *image);
+            if(cv::waitKey(1) > 0) break;
+        }
+	fps = clock();
+    }
+
+    delete image;
+    
+    if (test)// Destroy window with the name windowName.
+    {
+        cv::destroyWindow(windowNameRaw);
+        cv::destroyWindow(windowNameAfter);
+    }
+    
+    return 0;
+}
+
+
+// Filter the inputImage based off of the upper and lower range 
+// and store the result in outputImage.
+void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & inputImage, cv::Mat & outputImage)
+{
+    if (lowerRange[0] > upperRange[0])// If the range passes zero then extra
+    {                                // steps need to be taken to filter the image.
+        cv::Mat lowerPic, upperPic;
+        
+        // Filter lower range to zero.
+        cv::inRange(inputImage, lowerRange, cv::Scalar(180, upperRange[1], upperRange[2]), lowerPic);
+        
+        // Filter zero to upperRange.
+        cv::inRange(inputImage, cv::Scalar(0, lowerRange[1], lowerRange[2]), upperRange, upperPic);
+        
+        // Combine upperPic and lowerPic together.
+        cv::addWeighted(lowerPic, 1.0, upperPic, 1.0, 0.0, outputImage);
+    }
+    else// Filter image
+        cv::inRange(inputImage, lowerRange, upperRange, outputImage);
+}
+
+
+// Steps that have to be taken every loop, but aren't needed.
+void maintenance(cv::Mat & image, cv::String windowName)
+{
+    // Change the color space from BGR to HSV.
+    cv::cvtColor(image , image, cv::COLOR_BGR2HSV);
+}
