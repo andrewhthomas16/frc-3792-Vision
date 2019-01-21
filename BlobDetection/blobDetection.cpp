@@ -9,14 +9,20 @@ void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, 
 void maintenance(cv::Mat * image, cv::String windowName);
 
 const bool TEST = true;
+const double SATURATION = 1,// Values 0 - 1
+             BRIGHTNESS = 0,
+             CONTRAST = 1;
 
 int main(int argv, char ** argc)
 {
     cv::VideoCapture cap(0);
-    cap.set(cv::CAP_PROP_BUFFERSIZE, 5);
+    cap.set(CV_CAP_PROP_BUFFERSIZE, 1);
+    cap.set(CV_CAP_PROP_AUTOFOCUS, 0);
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 160);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 120);
-
+    cap.set(CV_CAP_PROP_SATURATION, SATURATION);
+    cap.set(CV_CAP_PROP_BRIGHTNESS, BRIGHTNESS);
+    cap.set(CV_CAP_PROP_CONTRAST, CONTRAST);
     //cv::Rect crop(0, 160, 320, 640);
 
     cv::Mat * image = new cv::Mat();
@@ -45,7 +51,6 @@ int main(int argv, char ** argc)
         cap >> *image;
 	//*image =new image(crop);
 	  
-	std::cout << image->cols << ", " << image->rows << std::endl;
 	if(TEST)
 	  cv::imshow(windowNameRaw, *image);
         
@@ -65,7 +70,7 @@ int main(int argv, char ** argc)
         // Blur image to get rid of the bad data points.
         cv::GaussianBlur(*image, *image, cv::Size(9, 9), 2, 2);
 
-        //std::cout << blob.calcCenter() << std::endl;
+        std::cout << blob.calcCenter() << std::endl;
         
         cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
 	
