@@ -13,11 +13,11 @@ const double SATURATION = 1,// Values 0 - 1
 
 int main(int argc, char * argv[])
 {
-    /*cv::VideoCapture cap(0);
+    cv::VideoCapture cap(0);
     cap.set(CV_CAP_PROP_BUFFERSIZE, 1);
     cap.set(CV_CAP_PROP_AUTOFOCUS, 0);
-    cap.set(CV_CAP_PROP_FRAME_WIDTH, 160);
-    cap.set(CV_CAP_PROP_FRAME_HEIGHT, 120);
+    //cap.set(CV_CAP_PROP_FRAME_WIDTH, 160);
+    //cap.set(CV_CAP_PROP_FRAME_HEIGHT, 120);
     cap.set(CV_CAP_PROP_SATURATION, SATURATION);
     cap.set(CV_CAP_PROP_BRIGHTNESS, BRIGHTNESS);
     cap.set(CV_CAP_PROP_CONTRAST, CONTRAST);
@@ -26,12 +26,12 @@ int main(int argc, char * argv[])
     {
         std::cout << "Video camera was not found." << std::endl;
         return -1;
-        }*/
+    }
 
     cv::Mat * image = new cv::Mat(), * filtered = new cv::Mat();
-    cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter", trackBarWindow = "Track Bar";
+    cv::String windowNameAfter = "VideoFeedAfter", trackBarWindow = "Track Bar";
     int minHue = 0, maxHue = 180, minSat = 0, maxSat = 255, minVal = 0, maxVal = 255;
-    cv::namedWindow(windowNameRaw);
+    
     cv::namedWindow(windowNameAfter);
     cv::namedWindow(trackBarWindow);
 
@@ -63,7 +63,6 @@ int main(int argc, char * argv[])
         cv::imshow(windowNameAfter, *filtered);
         if(cv::waitKey(1) > 0) break;
     }
-        cv::destroyWindow(windowNameRaw);
         cv::destroyWindow(windowNameAfter);
         cv::destroyWindow(trackBarWindow);
         
