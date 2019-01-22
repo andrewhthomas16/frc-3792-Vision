@@ -1,19 +1,21 @@
-// videoCalibration.cpp
+// blobDetection.cpp
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include "Blob.h"
+#include <ctime>
 
 void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
 void maintenance(cv::Mat * image, cv::String windowName);
 
+const bool TEST = true;
 const double SATURATION = 1,// Values 0 - 1
              BRIGHTNESS = 0,
              CONTRAST = 1;
 
-
-int main(int argc, char * argv[])
+int main(int argv, char ** argc)
 {
-    /*cv::VideoCapture cap(0);
+    cv::VideoCapture cap(0);
     cap.set(CV_CAP_PROP_BUFFERSIZE, 1);
     cap.set(CV_CAP_PROP_AUTOFOCUS, 0);
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 160);
@@ -21,52 +23,73 @@ int main(int argc, char * argv[])
     cap.set(CV_CAP_PROP_SATURATION, SATURATION);
     cap.set(CV_CAP_PROP_BRIGHTNESS, BRIGHTNESS);
     cap.set(CV_CAP_PROP_CONTRAST, CONTRAST);
+    //cv::Rect crop(0, 160, 320, 640);
+
+    cv::Mat * image = new cv::Mat();
     
     if(!cap.isOpened())
     {
         std::cout << "Video camera was not found." << std::endl;
         return -1;
-        }*/
+    }
+    
+    cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter";
 
-    cv::Mat * image = new cv::Mat(), * filtered = new cv::Mat();
-    cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter", trackBarWindow = "Track Bar";
-    int minHue = 0, maxHue = 180, minSat = 0, maxSat = 255, minVal = 0, maxVal = 255;
-    cv::namedWindow(windowNameRaw);
-    cv::namedWindow(windowNameAfter);
-    cv::namedWindow(trackBarWindow);
-
-    cv::createTrackbar(cv::String("Min Hue"), trackBarWindow, &minHue, 180);
-    cv::createTrackbar(cv::String("Max Hue"), trackBarWindow, &maxHue, 180);
-    cv::createTrackbar(cv::String("Min Saturation"), trackBarWindow, &minSat, 255);
-    cv::createTrackbar(cv::String("Max Saturation"), trackBarWindow, &maxSat, 255);
-    cv::createTrackbar(cv::String("Min Value"), trackBarWindow, &minVal, 255);
-    cv::createTrackbar(cv::String("Max Value"), trackBarWindow, &maxVal, 255);
+    double fps = 0, center;
+    Blob blob(image);
+    blob.setMinThreshold(2);
+    
+    if(TEST)
+      {
+	cv::namedWindow(windowNameRaw);
+	cv::namedWindow(windowNameAfter);
+      }
     
     while(true)
     {
-        cap >> * image;
-        //*image = cv::imread("/home/student/Pictures/Example.jpg"); 
+        //image = cv::imread("/home/student/Projects/C++/OpenCV/Pictures/2019VisionImages/CargoSideStraightDark72in.jpg");
+        cap >> *image;
+	//*image =new image(crop);
+	  
+	if(TEST)
+	  cv::imshow(windowNameRaw, *image);
         
+	// Check for failure
         if(image->empty())
         {
-            std::cout << "Could not load image" << std::endl;
+            std::cout << "Could not open or find the image" << std::endl;
             return -1;
         }
-        cv::imshow(trackBarWindow, *image);
-
-	maintenance(image, windowNameAfter);
         
+        maintenance(image, windowNameAfter);
+                
         // Filter image based off of a lower and upper Range of color.
-        // The ranges are H: 0 - 180,  S: 0 - 255,  V: 0 - 255.
-        filter(cv::Scalar(minHue, minSat, minVal), cv::Scalar(maxHue, maxSat, maxVal), *image, *filtered);
+        // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
+        filter(cv::Scalar(70, 23, 50), cv::Scalar(100, 255, 255), *image, *image);
+        
+        // Blur image to get rid of the bad data points.
+        cv::GaussianBlur(*image, *image, cv::Size(9, 9), 2, 2);
 
-        cv::imshow(windowNameAfter, *filtered);
-        if(cv::waitKey(1) > 0) break;
+        std::cout << blob.calcCenter() << std::endl;
+        
+        cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
+	
+        if(TEST)// Show image.
+        {
+            cv::imshow(windowNameAfter, *image);
+            if(cv::waitKey(1) > 0) break;
+	    fps = clock();
+	}
     }
+
+    delete image;
+    
+    if (TEST)// Destroy window with the name windowName.
+    {
         cv::destroyWindow(windowNameRaw);
         cv::destroyWindow(windowNameAfter);
-        cv::destroyWindow(trackBarWindow);
-        
+    }
+    
     return 0;
 }
 
