@@ -1,0 +1,16 @@
+a.out:
+	g++ `pkg-config --cflags --libs /usr/local/Cellar/opencv/4.0.1/lib/pkgconfig/opencv4.pc` -std=c++11 *.cpp
+
+run:
+	./a.out
+r:
+	./a.out
+
+clean:
+	rm a.out
+c:
+	rm a.out
+
+reset:
+	rm a.out
+	g++ `pkg-config --cflags --libs opencv` *.cpp
