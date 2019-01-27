@@ -16,13 +16,13 @@ const double SATURATION = 1,// Values 0 - 1
 int main(int argv, char ** argc)
 {
     cv::VideoCapture cap(0);
-    cap.set(CV_CAP_PROP_BUFFERSIZE, 1);
-    cap.set(CV_CAP_PROP_AUTOFOCUS, 0);
-    cap.set(CV_CAP_PROP_FRAME_WIDTH, 160);
-    cap.set(CV_CAP_PROP_FRAME_HEIGHT, 120);
-    cap.set(CV_CAP_PROP_SATURATION, SATURATION);
-    cap.set(CV_CAP_PROP_BRIGHTNESS, BRIGHTNESS);
-    cap.set(CV_CAP_PROP_CONTRAST, CONTRAST);
+    cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
+    cap.set(cv::CAP_PROP_AUTOFOCUS, 0);
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 160);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 120);
+    cap.set(cv::CAP_PROP_SATURATION, SATURATION);
+    cap.set(cv::CAP_PROP_BRIGHTNESS, BRIGHTNESS);
+    cap.set(cv::CAP_PROP_CONTRAST, CONTRAST);
     //cv::Rect crop(0, 160, 320, 640);
 
     cv::Mat * image = new cv::Mat();
