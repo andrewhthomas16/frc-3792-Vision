@@ -28,16 +28,24 @@ Blob::~Blob()
 
 void Blob::calcThreshold()
 {
+  // Make sure there are just enough pointsX elements.
     pointsX.resize(image->cols);
     
-    for(int x = 0; x < image->cols; x++)
-        for(int y = 0; y < image->rows; y++)
+    // Reset the PointsX array to make sure all values are set to zero.
+    for(int i = 0; i < image->cols; i ++)
+      pointsX[i] = 0;
+
+    // Loop through every pixel and check to see if it is white.
+    // If it is white add one to corresponding colunm element in pointsX.
+    for(int y = 0; y < image->rows; y++)
+        for(int x = 0; x < image->cols; x++)
         {
             cv::Vec3b color = image->at<uchar>(cv::Point(x, y));
             if(color.val[0] >= 200)
-                pointsX.at(x) += 1;
-        }
+	      pointsX[x] += 1;
+	}
 
+    // Make sure the colunms are over the min threshold for a colunm.
     for(int i = 0; i < pointsX.size(); i++)
         if(pointsX[i] < minThresh)
             pointsX[i] = 0;

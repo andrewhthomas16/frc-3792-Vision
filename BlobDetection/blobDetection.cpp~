@@ -12,17 +12,18 @@ const bool TEST = true;
 const double SATURATION = 1,// Values 0 - 1
              BRIGHTNESS = 0,
              CONTRAST = 1;
+const int THRESH = 100;
 
 int main(int argv, char ** argc)
 {
     cv::VideoCapture cap(0);
-    cap.set(CV_CAP_PROP_BUFFERSIZE, 1);
-    cap.set(CV_CAP_PROP_AUTOFOCUS, 0);
-    cap.set(CV_CAP_PROP_FRAME_WIDTH, 160);
-    cap.set(CV_CAP_PROP_FRAME_HEIGHT, 120);
-    cap.set(CV_CAP_PROP_SATURATION, SATURATION);
-    cap.set(CV_CAP_PROP_BRIGHTNESS, BRIGHTNESS);
-    cap.set(CV_CAP_PROP_CONTRAST, CONTRAST);
+    cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
+    cap.set(cv::CAP_PROP_AUTOFOCUS, 0);
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 160);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 120);
+    cap.set(cv::CAP_PROP_SATURATION, SATURATION);
+    cap.set(cv::CAP_PROP_BRIGHTNESS, BRIGHTNESS);
+    cap.set(cv::CAP_PROP_CONTRAST, CONTRAST);
     //cv::Rect crop(0, 160, 320, 640);
 
     cv::Mat * image = new cv::Mat();
@@ -36,6 +37,9 @@ int main(int argv, char ** argc)
     cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter";
 
     double fps = 0, center;
+    cv::Mat cannyOutput;
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<cv::Vec4i> hierarchy;
     Blob blob(image);
     blob.setMinThreshold(2);
     
@@ -47,7 +51,7 @@ int main(int argv, char ** argc)
     
     while(true)
     {
-        //image = cv::imread("/home/student/Projects/C++/OpenCV/Pictures/2019VisionImages/CargoSideStraightDark72in.jpg");
+        //*image = cv::imread("/~/Documents/frc-3792/Pictures/2019VisionImages/CargoSideStraightDark72in.jpg");
         cap >> *image;
 	//*image =new image(crop);
 	  
@@ -65,13 +69,23 @@ int main(int argv, char ** argc)
                 
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
-        filter(cv::Scalar(70, 23, 50), cv::Scalar(100, 255, 255), *image, *image);
+        filter(cv::Scalar(5, 5, 5), cv::Scalar(170, 255, 255), *image, *image);
         
         // Blur image to get rid of the bad data points.
         cv::GaussianBlur(*image, *image, cv::Size(9, 9), 2, 2);
 
-        std::cout << blob.calcCenter() << std::endl;
-        
+        //std::cout << blob.calcCenter() << std::endl;
+	cv::Canny(*image, cannyOutput, THRESH, THRESH * 2, 3);
+	cv::findContours(cannyOutput, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+	std::vector<cv::Moments> mu(contours.size());
+	std::vector<cv::Point2f> mc(contours.size());
+
+	for(int i = 0; i < contours.size(); i++)
+	  mu[i] = cv::moments(contours[i], false);
+
+	for(int i = 0; i < contours.size(); i++)
+	  mc[i] = cv::Point2f(mu[i].m10 / mu[i].m00, mu[i].m01 / mu[i].m00);
+
         cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
 	
         if(TEST)// Show image.
