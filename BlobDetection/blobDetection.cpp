@@ -1,4 +1,4 @@
-// blobDetection.cpp
+// blobDetection.cpp
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -14,7 +14,7 @@ const double SATURATION = 1,// Values 0 - 1
              CONTRAST = 1;
 const int THRESH = 100;
 
-int main(int argv, char ** argc)
+int main(int argc, char * argv[])
 {
     cv::VideoCapture cap(0);
     cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
@@ -44,10 +44,10 @@ int main(int argv, char ** argc)
     blob.setMinThreshold(2);
     
     if(TEST)
-      {
-	cv::namedWindow(windowNameRaw);
-	cv::namedWindow(windowNameAfter);
-      }
+    {
+        cv::namedWindow(windowNameRaw);
+        cv::namedWindow(windowNameAfter);
+    }
     
     while(true)
     {
@@ -56,7 +56,7 @@ int main(int argv, char ** argc)
 	//*image =new image(crop);
 	  
 	if(TEST)
-	  cv::imshow(windowNameRaw, *image);
+        cv::imshow(windowNameRaw, *image);
         
 	// Check for failure
         if(image->empty())
@@ -93,14 +93,14 @@ int main(int argv, char ** argc)
 	*/
 
 	std::cout << "Center of White Pixels." << blob.calcCenter() << std::endl;
-        cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
+    cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
 	
         if(TEST)// Show image.
         {
             cv::imshow(windowNameAfter, *image);
             if(cv::waitKey(1) > 0) break;
-	    fps = clock();
-	}
+            fps = clock();
+        }
     }
 
     delete image;

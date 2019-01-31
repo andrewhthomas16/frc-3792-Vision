@@ -28,7 +28,7 @@ Blob::~Blob()
 
 void Blob::calcThreshold()
 {
-  // Make sure there are just enough pointsX elements.
+    // Make sure there are just enough pointsX elements.
     pointsX.resize(image->cols);
     
     // Reset the PointsX array to make sure all values are set to zero.
@@ -42,8 +42,8 @@ void Blob::calcThreshold()
         {
             cv::Vec3b color = image->at<uchar>(cv::Point(x, y));
             if(color.val[0] >= 200)
-	      pointsX[x] += 1;
-	}
+                pointsX[x] += 1;
+        }
 
     // Make sure the colunms are over the min threshold for a colunm.
     for(int i = 0; i < pointsX.size(); i++)
