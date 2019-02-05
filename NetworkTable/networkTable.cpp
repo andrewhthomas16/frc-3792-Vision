@@ -7,7 +7,7 @@ int main(int argc, char * argv[])
     double x = 1, y = 2, distance = 3;
 
     //nt::NetworkTableEntry xEntry, yEntry, Distance;
-    nt::NetworkTable * table = NetworkTable::GetTable("datatable");
+    nt::NetworkTable * table = nt::NetworkTable::GetTable("datatable");
 
     int i = 1;
 
