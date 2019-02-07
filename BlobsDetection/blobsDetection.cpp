@@ -4,7 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include "Blobs.h"
 #include "Blob.h"
-#inlcude "Point2i.h"
+#include "Point2i.h"
 #include <ctime>
 
 void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
@@ -80,7 +80,7 @@ int main(int argc, char * argv[])
         if(blobs.getNumBlobs() > 0)
             blobs.getBlob(0).averageX();
         
-        std::cout << "Center of White Pixels." << blobs.calcBlobs() << std::endl;
+        //std::cout << "Center of White Pixels." << blobs.calcBlobs() << std::endl;
         cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
       
         if(TEST)// Show image.
