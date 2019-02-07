@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
         if(TEST)// Show image.
         {
             cv::imshow(windowNameAfter, *image);
-            if(cv::waitKey(1) > 0) break;
+            if(cv::waitKey(1) == 27) break;
             fps = clock();
         }
     }

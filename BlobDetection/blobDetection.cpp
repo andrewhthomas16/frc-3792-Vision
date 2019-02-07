@@ -1,4 +1,4 @@
-// blobDetection.cpp
+
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -51,12 +51,12 @@ int main(int argc, char * argv[])
     
     while(true)
     {
-        //*image = cv::imread("/~/Documents/frc-3792/Pictures/2019VisionImages/CargoSideStraightDark72in.jpg");
+        //image = cv::imread("/~/Documents/frc-3792/Pictures/2019VisionImages/CargoSideStraightDark72in.jpg");
         cap >> *image;
-	//*image =new image(crop);
+	//image =new image(crop);
 	  
 	if(TEST)
-        cv::imshow(windowNameRaw, *image);
+		cv::imshow(windowNameRaw, *image);
         
 	// Check for failure
         if(image->empty())
@@ -98,9 +98,10 @@ int main(int argc, char * argv[])
         if(TEST)// Show image.
         {
             cv::imshow(windowNameAfter, *image);
-            if(cv::waitKey(1) > 0) break;
-            fps = clock();
+            if(cv::waitKey(1) == 27) break;
+	fps = clock();
         }
+
     }
 
     delete image;
@@ -110,7 +111,7 @@ int main(int argc, char * argv[])
         cv::destroyWindow(windowNameRaw);
         cv::destroyWindow(windowNameAfter);
     }
-    
+
     return 0;
 }
 

@@ -12,8 +12,8 @@ int resolvehelper(const char* hostname, int family, const char* service, sockadd
 void error(std::string err);
 
 const int BUFFSIZE = 1024;
-const char const * PORT= "3030";
-const char const * IP = "10.0.9.163";
+const char const * PORT= "5800";
+const char const * IP = "10.37.92.2";
 
 
 int main(int argc, char * argv[])
