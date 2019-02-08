@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
     
     while(true) // Enter a loop.
     {
-        result = sendto(sock, buff, /*strlen(buff)*/ 5, 0, (struct sockaddr *) &addr, sizeof(addr));
+        result = sendto(sock, buff, std::strlen(buff), 0, (struct sockaddr *) &addr, sizeof(addr));
         if(result == -1)
             error("Error sending data.");
     }
@@ -46,25 +46,23 @@ int main(int argc, char * argv[])
 }
 
 
+// A function to make sure UDP will work as expected.
 int resolvehelper(const char* hostname, int family, const char* service, sockaddr_storage* pAddr)
 {
     int result;
     addrinfo* result_list = NULL;
     addrinfo hints = {};
     hints.ai_family = family;
-    hints.ai_socktype = SOCK_DGRAM; // without this flag, getaddrinfo will return 3x the number of addresses (one for each socket type).
+    hints.ai_socktype = SOCK_DGRAM; /* without this flag, getaddrinfo will
+                                       return 3x the number of addresses (one
+                                       for each socket type).*/
     result = getaddrinfo(hostname, service, &hints, &result_list);
-    if (result == 0)
-    {
-        //ASSERT(result_list->ai_addrlen <= sizeof(sockaddr_in));
-        //memcpy(pAddr, result_list->ai_addr, result_list->ai_addrlen);
-        freeaddrinfo(result_list);
-    }
     
     return result;
 }
     
-    
+
+// Function to output UDP errors.
 void error(std::string err)
 {
     std::cout << err << "\nPress enter to continue..." << std::endl;
