@@ -7,7 +7,7 @@ using namespace std;
 int main(int argv, char ** argc)
 {
     // Read the image file.
-    cv::Mat image = cv::imread("/home/student/Pictures/IMG_1775.jpg");
+    cv::Mat image = image = cv::imread("../Pictures/IMG_1775.jpg");
 
     // Check for failure
     if(image.empty())
@@ -69,7 +69,7 @@ int main(int argv, char ** argc)
               << "] where there are 100 rows and colunms." << std::endl;
 
     //Put the center point on the image.
-    cv::circle(mask, p, 5, cv::Scalar(0, 0, 0), -1);
+    cv::circle(*mask, p, 5, cv::Scalar(0, 0, 0), -1);
     
     // Show mask.
     cv::imshow(windowName, mask);

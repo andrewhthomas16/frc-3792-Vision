@@ -38,11 +38,11 @@ int main(int argc, char * argv[])
 
     cv::createTrackbar(cv::String("Min Hue"), trackBarWindow, &minHue, 180);
     cv::createTrackbar(cv::String("Max Hue"), trackBarWindow, &maxHue, 180);
-    cv::createTrackbar(cv::String("Min Saturation"), trackBarWindow, &minSat, 255);
-    cv::createTrackbar(cv::String("Max Saturation"), trackBarWindow, &maxSat, 255);
-    cv::createTrackbar(cv::String("Min Value"), trackBarWindow, &minVal, 255);
-    cv::createTrackbar(cv::String("Max Value"), trackBarWindow, &maxVal, 255);
-    
+    cv::createTrackbar(cv::String("Min Sat"), trackBarWindow, &minSat, 255);
+    cv::createTrackbar(cv::String("Max Sat"), trackBarWindow, &maxSat, 255);
+    cv::createTrackbar(cv::String("Min Val"), trackBarWindow, &minVal, 255);
+    cv::createTrackbar(cv::String("Max Val"), trackBarWindow, &maxVal, 255);
+
     while(true)
     {
         cap >> * image;
@@ -54,19 +54,20 @@ int main(int argc, char * argv[])
             return -1;
         }
         cv::imshow(WindowNameRaw, *image);
-	//cv::imshow(trackBarWindow, );
+	//cv::imshow(trackBarWindow, *image);
 
 	maintenance(image, windowNameAfter);
         
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 180,  S: 0 - 255,  V: 0 - 255.
         filter(cv::Scalar(minHue, minSat, minVal), cv::Scalar(maxHue, maxSat, maxVal), *image, *filtered);
-
+	
         cv::imshow(windowNameAfter, *filtered);
-        if(cv::waitKey(1) > 0) break;
+        if(cv::waitKey(1) == 27) break;
     }
         cv::destroyWindow(windowNameAfter);
-        cv::destroyWindow(trackBarWindow);
+	std::cout << "Hey";
+	cv::destroyWindow(trackBarWindow);
         
     return 0;
 }

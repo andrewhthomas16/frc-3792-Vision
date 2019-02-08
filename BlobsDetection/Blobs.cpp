@@ -96,13 +96,14 @@ void Blobs::calcBlobs()
         {                             // are too far away.
             blobs.push_back(Blob());
             addPoints(blobs.at(blobs.size() - 1), i);
+            newBlob = false;
         }
-        else if(pointsX[i] && !newBlob) // There is a Blob nearby, so add
-        {                               // to that Blob.
+        else if(pointsX[i] > 0 && !newBlob) // There is a Blob nearby, so add
+        {                                   // to that Blob.
             addPoints(blobs.at(blobs.size() - 1), i);
         }
-        else if(!newBlob) // There is nothing to be added to a Blob,
-            dist++;       // so add one to dist.
+        else if(pointsX[i] == 0 && !newBlob) // There is nothing to be added
+            dist++;                          // to a Blob, so add one to dist.
         
         if(dist >= minDist) // Check to see if a new Blob need to be made
         {                   // next time pointsX[i] > 0.
