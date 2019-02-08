@@ -12,8 +12,8 @@ int resolvehelper(const char* hostname, int family, const char* service, sockadd
 void error(std::string err);
 
 const int BUFFSIZE = 1024;
-const char const * PORT= "5800";
-const char const * IP = "10.37.92.2";
+const char * PORT= "5800";
+const char * IP = "10.37.92.43";
 
 
 int main(int argc, char * argv[])
@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
     
     while(true) // Enter a loop.
     {
-        result = sendto(sock, buff, strlen(buff), 0, (struct sockaddr *) &addr, sizeof(addr));
+        result = sendto(sock, buff, /*strlen(buff)*/ 5, 0, (struct sockaddr *) &addr, sizeof(addr));
         if(result == -1)
             error("Error sending data.");
     }
@@ -57,7 +57,7 @@ int resolvehelper(const char* hostname, int family, const char* service, sockadd
     if (result == 0)
     {
         //ASSERT(result_list->ai_addrlen <= sizeof(sockaddr_in));
-        memcpy(pAddr, result_list->ai_addr, result_list->ai_addrlen);
+        //memcpy(pAddr, result_list->ai_addr, result_list->ai_addrlen);
         freeaddrinfo(result_list);
     }
     
