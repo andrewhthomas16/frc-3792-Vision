@@ -70,7 +70,7 @@ int main(int argc, char * argv[])
                 
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
-        filter(cv::Scalar(5, 5, 100), cv::Scalar(170, 100, 255), *image, *image);
+        filter(cv::Scalar(90, 130, 0), cv::Scalar(120, 255, 255), *image, *image);
         
         // Blur image to get rid of the bad data points.
         cv::GaussianBlur(*image, *image, cv::Size(9, 9), 2, 2);
