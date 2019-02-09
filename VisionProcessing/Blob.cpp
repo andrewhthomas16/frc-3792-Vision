@@ -90,6 +90,13 @@ Point2i Blob::operator [] (int i)
 }
 
 
+// Operator to set this to arr.
+void Blob::operator = (Blob arr)
+{
+    points = arr.points;
+}
+
+
 // Method to return the size of the points vector.
 int Blob::size()
 {

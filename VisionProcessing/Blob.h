@@ -27,6 +27,7 @@ public:
     int averageY();
     Point2i average();
     Point2i operator [] (int i);
+    void operator = (Blob arr);
     int size();
     
 private:

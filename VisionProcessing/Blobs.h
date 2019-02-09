@@ -18,7 +18,6 @@ public:
     
     double calcCenter();
     void calcBlobs();
-    void addPoints(Blob & blob, int col);
     
     // Getters
     double getCenter();
@@ -39,6 +38,8 @@ public:
     
 private:
     void calcThreshold();
+    void addPoints(Blob & blob, int col);
+    void sortBlobs();
     const cv::Mat * image;
     std::vector<int> pointsX;
     std::vector<Blob> blobs;

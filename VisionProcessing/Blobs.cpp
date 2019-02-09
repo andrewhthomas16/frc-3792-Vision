@@ -111,16 +111,37 @@ void Blobs::calcBlobs()
             dist = 0;
         }
     }
+    
+    sortBlobs(); // Sort blobs by array. Largest to smallest.
 }
 
+
+// Method to all points that are white and in image->col to blob.
+// This method helps calcBlobs().
 void Blobs::addPoints(Blob & blob, int col)
 {
-	for(int i = 0; i < image->rows; i++)
+	for(int i = 0; i < image->rows; i++) // Loop through colunm.
 	{
 		cv::Vec3b color = image->at<uchar>(cv::Point(col, i));
-            if(color.val[0] >= 200)
+            if(color.val[0] >= 200) // Check if pixel(col, i) is white.
                 blob.addPoint(col, i);
 	}
+}
+
+
+// Function to sort all of the Blobs in blobs. This method utilizes bubble
+// sort and sorts highest to lowest.
+void Blobs::sortBlobs()
+{
+    Blob temp;
+    for(int i = 0; i < blobs.size(); i++)
+        for(int j = 0; j < blobs.size() - 1; i++)
+            if(blobs.at(j).size() < blobs.at(j + 1).size())
+            {
+                temp = blobs.at(j);
+                blobs.at(j) = blobs.at(j + 1);
+                blobs.at(j + 1) = temp;
+            }
 }
 
 
