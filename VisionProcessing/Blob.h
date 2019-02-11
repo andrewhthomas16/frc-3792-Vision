@@ -21,14 +21,15 @@ public:
     ~Blob();
     
     // Methods
-    void addPoint(const int & x, const int & y);
+    void addPoint(const int x, const int y);
     void addPoint(const Point2i & var);
     int averageX();
     int averageY();
     Point2i average();
     Point2i operator [] (int i);
     void operator = (Blob arr);
-    int size();
+    void operator += (Blob arr);
+	int size();
     
 private:
     std::vector<Point2i> points;

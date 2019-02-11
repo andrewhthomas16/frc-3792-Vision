@@ -8,38 +8,35 @@
 #include "Point2i.h"
 #include "UDP.h"
 
+
 std::string sendBackData(Blobs * blobs);
+void calcHatchAndBall(Blobs * blobs);
 void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
 void maintenance(cv::Mat * image, cv::String windowName);
 
-const bool TEST = true, VIDEO = true;
+// Values for simulation.
+const bool TEST = true,
+	       VIDEO = true,
+	       RIO = false,
+	       BLUR = false,
+           HATCH = false;
+
+// Values for the camera.
 const double SATURATION = 1,// Values 0 - 1
              BRIGHTNESS = 0,
              CONTRAST = 1;
-const int THRESH = 120,
-DIST = 40;
+
+// Values for calculating Blobs.
+const int THRESH = 5,
+          DIST = 15;
+
+// Values for UDP
 const char * IP = "10.37.92.43",
-* PORT= "5800";
+	       * PORT= "5800";
 
 
 int main(int argc, char * argv[])
 {
-    cv::VideoCapture cap(0);
-    cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
-    cap.set(cv::CAP_PROP_AUTOFOCUS, 0);
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 160);
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 120);
-    cap.set(cv::CAP_PROP_SATURATION, SATURATION);
-    cap.set(cv::CAP_PROP_BRIGHTNESS, BRIGHTNESS);
-    cap.set(cv::CAP_PROP_CONTRAST, CONTRAST);
-    //cv::Rect crop(0, 160, 320, 640);
-    
-    if(!cap.isOpened())
-    {
-        std::cout << "Video camera was not found." << std::endl;
-        return -1;
-    }
-    
     cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter";
     cv::Mat * image = new cv::Mat();
     Blobs blobs(image);
@@ -48,6 +45,18 @@ int main(int argc, char * argv[])
     UDP udp(IP, PORT);
     double fps = 0, center;
     
+    cv::VideoCapture cap(0);
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 160);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 120);
+    cap.set(cv::CAP_PROP_SATURATION, SATURATION);
+    cap.set(cv::CAP_PROP_BRIGHTNESS, BRIGHTNESS);
+    cap.set(cv::CAP_PROP_CONTRAST, CONTRAST);
+
+    if(!cap.isOpened())
+    {
+        std::cout << "Video camera was not found." << std::endl;
+        return -1;
+    }
     if(TEST)
     {
         cv::namedWindow(windowNameRaw);
@@ -56,12 +65,11 @@ int main(int argc, char * argv[])
     
     while(true)
     {
-        if(VIDEO)
-            cap >> *image;
-        else
-            *image = cv::imread("/~/Documents/frc-3792/Pictures/2019VisionImages/    CargoSideStraightDark72in.jpg");
-        //*image =new image(crop);
-        
+	if(VIDEO)
+        cap >> *image;
+    else
+        *image = cv::imread("../frc-3792/Pictures/2019VisionImages/CargoSideStraightDark72in.jpg");
+
         if(TEST)
             cv::imshow(windowNameRaw, *image);
         
@@ -71,41 +79,45 @@ int main(int argc, char * argv[])
             std::cout << "Could not open or find the image" << std::endl;
             return -1;
         }
-        
+
         maintenance(image, windowNameAfter);
         
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
-        
-        filter(cv::Scalar(70, 10, 0), cv::Scalar(140, 255, 255), *image, *image);
+        filter(cv::Scalar(60, 150, 100), cv::Scalar(80, 255, 255), *image, *image);
         
         // Blur image to get rid of the bad data points.
-        cv::GaussianBlur(*image, *image, cv::Size(9, 9), 2, 2);
-        
+        if(BLUR)
+            cv::GaussianBlur(*image, *image, cv::Size(9, 9), 2, 2);
+
         blobs.calcBlobs();
-        
-        //if(blobs.getNumBlobs() > 0)
-        // std::cout << blobs.getBlob(0).averageX() << std::endl;
+
         
         std::cout << blobs.getNumBlobs() << std::endl;
-        //std::cout << "Center of White Pixels." << blobs.calcBlobs() << std::endl;
-        cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
+        if(TEST)
+            cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
+
+        if(HATCH)
+            calcHatchAndBall(blobs);
         
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
-        udp.send(const_cast<char *>(sendBackData(& blobs).c_str()));
-        
-        if(TEST)// Show image.
+        if(RIO)
+            udp.send(const_cast<char *>(sendBackData(& blobs).c_str()));
+
+        if(TEST) // Show image.
         {
+
             cv::imshow(windowNameAfter, *image);
             if(cv::waitKey(1) == 27) break;
             fps = clock();
+            std::system("clear");
         }
     }
     
     delete image;
     
-    if (TEST)// Destroy window with the name windowName.
+    if (TEST) // Destroy window with the name windowName.
     {
         cv::destroyWindow(windowNameRaw);
         cv::destroyWindow(windowNameAfter);
@@ -133,6 +145,14 @@ std::string sendBackData(Blobs * blobs)
     }while(true);
     
     return sendBack;
+}
+
+
+// Function for putting to vision targets in one Blob.
+// THIS FUNCTION IS SPECIFIC TO THE 2019 SEASON.
+void calcHatchAndBall(Blobs * blobs)
+{
+    
 }
 
 

@@ -40,7 +40,7 @@ Blob::~Blob(){}
 
 
 // Method to add a Poin2i to pointsusing an x, y cordinate.
-void Blob::addPoint(const int & x, const int & y)
+void Blob::addPoint(const int x, const int y)
 {
     points.push_back(Point2i(x, y));
 }
@@ -59,8 +59,10 @@ int Blob::averageX()
     int avg = 0;
     for(int i = 0; i < points.size(); i++)
         avg += points.at(i).x;
-    
-    return avg / points.size();
+    if(points.size() > 0) 
+    	return avg / points.size();
+    else
+        return -1;
 }
 
 
@@ -70,8 +72,10 @@ int Blob::averageY()
     int avg = 0;
     for(int i = 0; i < points.size(); i++)
         avg += points.at(i).y;
-    
-    return avg / points.size();
+    if(points.size() > 0)
+    	return avg / points.size();
+    else
+	return -1;
 }
 
 
@@ -94,6 +98,14 @@ Point2i Blob::operator [] (int i)
 void Blob::operator = (Blob arr)
 {
     points = arr.points;
+}
+
+
+// Operator to set this to this + arr.
+void Blob::operator += (Blob arr)
+{
+	for(int i = 0; i < arr.points.size(); i++)
+		points.push_back(arr.points.at(i));
 }
 
 

@@ -35,7 +35,7 @@ void Blobs::calcThreshold()
 {
     // Make sure there are just enough pointsX elements.
     pointsX.resize(image->cols);
-    
+
     // Reset the PointsX array to make sure all values are set to zero.
     for(int i = 0; i < image->cols; i ++)
         pointsX[i] = 0;
@@ -46,7 +46,7 @@ void Blobs::calcThreshold()
         for(int x = 0; x < image->cols; x++)
         {
             cv::Vec3b color = image->at<uchar>(cv::Point(x, y));
-            if(color.val[0] >= 200)
+            if(color.val[0] >= 100)
                 pointsX[x] += 1;
         }
     
@@ -116,14 +116,33 @@ void Blobs::calcBlobs()
 }
 
 
+// A method to combine blobs into the lower element in blobs.
+void Blobs::combineBlobs(int i, int j)
+{
+	if(i < blobs.size() && j < blobs.size())
+	{
+		if(i < j)
+		{
+			blobs.at(i) += blobs.at(j);
+			blobs.erase(blobs.begin() + j);
+		}
+		else if(j < i)
+		{
+			blobs.at(j) += blobs.at(i);
+			blobs.erase(blobs.begin() + i);
+		}
+	}
+}
+
+
 // Method to all points that are white and in image->col to blob.
 // This method helps calcBlobs().
 void Blobs::addPoints(Blob & blob, int col)
 {
-	for(int i = 0; i < image->rows; i++) // Loop through colunm.
+	for(int i = 0; i < image->rows; i++) // Loop through colunms.
 	{
-		cv::Vec3b color = image->at<uchar>(cv::Point(col, i));
-            if(color.val[0] >= 200) // Check if pixel(col, i) is white.
+	    cv::Vec3b color = image->at<uchar>(cv::Point(col, i));
+            if(color.val[0] >= 100) // Check to see if (col, i) is white.
                 blob.addPoint(col, i);
 	}
 }

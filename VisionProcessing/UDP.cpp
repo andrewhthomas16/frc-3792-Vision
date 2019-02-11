@@ -7,6 +7,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <stdio.h>
+#include <cstring>
 #include "UDP.h"
 
 

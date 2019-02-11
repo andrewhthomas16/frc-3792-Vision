@@ -18,7 +18,8 @@ public:
     
     double calcCenter();
     void calcBlobs();
-    
+    void combineBlobs(int i, int j);
+
     // Getters
     double getCenter();
     unsigned int getMinThreshold();
