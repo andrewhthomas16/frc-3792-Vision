@@ -14,6 +14,14 @@ Blobs::Blobs(const cv::Mat * _image)
     minThresh = 100;
     minDist = 10;
 }
+Blobs::Blobs(const cv::Mat * _image, const unsigned int _minThresh,
+      const unsigned int _minDist, const unsigned int _minArea)
+{
+    image = _image;
+    minThresh = _minThresh;
+    minDist = _minDist;
+    minArea = _minArea;
+}
 Blobs::Blobs(const Blobs & copy)
 {
     image = copy.image;
@@ -112,6 +120,10 @@ void Blobs::calcBlobs()
         }
     }
     
+    for(int i = 0; i < blobs.size(); i++)
+        if(blobs.at(i).size() < minArea)
+            blobs.erase(blobs.begin() + i); /* TODO: Implement erase*/
+    
     sortBlobs(); // Sort blobs by array. Largest to smallest.
 }
 
@@ -166,29 +178,20 @@ void Blobs::sortBlobs()
 
 // Getters
 double Blobs::getCenter(){ return center; }
-
 unsigned int Blobs::getMinThreshold(){ return minThresh; }
-
 unsigned int Blobs::getMinDistance(){ return minDist; }
-
+unsigned int Blobs::getMinArea(){ return minArea; }
 unsigned int Blobs::getXcheck(){ return xCheck; }
-
 unsigned int Blobs::getYCheck(){ return yCheck; }
-
 cv::Mat Blobs::getImage(){ return *image; }
-
 Blob Blobs::getBlob(int i){ return blobs.at(i); }
-
 int Blobs::getNumBlobs(){ return blobs.size(); }
 
 
 // Setters
 void Blobs::setMinThreshold(unsigned int _minThresh){ minThresh = _minThresh; }
-
 void Blobs::setMinDistance(unsigned int _minDist){ minDist = _minDist; }
-
+void Blobs::setMinArea(unsigned int _minArea) { minArea = _minArea; }
 void Blobs::setXCheck(unsigned int _xCheck){ xCheck = _xCheck; }
-
 void Blobs::setYCheck(unsigned int _yCheck){ yCheck = _yCheck; }
-
 void Blobs::setImage(cv::Mat * _image){ image = _image; }

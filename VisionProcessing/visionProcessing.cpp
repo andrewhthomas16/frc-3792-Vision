@@ -27,8 +27,11 @@ const double SATURATION = 1,// Values 0 - 1
              CONTRAST = 1;
 
 // Values for calculating Blobs.
-const int THRESH = 5,
-          DIST = 15;
+const int HEIGHT = 120,
+          WIDTH = 160,
+          THRESH = 5,
+          DIST = 15,
+          AREA = 10;
 
 // Values for UDP
 const char * IP = "10.37.92.43",
@@ -39,15 +42,13 @@ int main(int argc, char * argv[])
 {
     cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter";
     cv::Mat * image = new cv::Mat();
-    Blobs blobs(image);
-    blobs.setMinThreshold(THRESH);
-    blobs.setMinDistance(DIST);
+    Blobs blobs(image, THRESH, DIST, AREA);
     UDP udp(IP, PORT);
     double fps = 0, center;
     
     cv::VideoCapture cap(0);
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 160);
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 120);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, HEIGHT);
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, WIDTH);
     cap.set(cv::CAP_PROP_SATURATION, SATURATION);
     cap.set(cv::CAP_PROP_BRIGHTNESS, BRIGHTNESS);
     cap.set(cv::CAP_PROP_CONTRAST, CONTRAST);
@@ -97,8 +98,8 @@ int main(int argc, char * argv[])
         if(TEST)
             cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
 
-        if(HATCH)
-            calcHatchAndBall(blobs);
+        if(HATCH) // SPECIFIC TO 2019.
+            calcHatchAndBall(&blobs);
         
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
@@ -152,7 +153,16 @@ std::string sendBackData(Blobs * blobs)
 // THIS FUNCTION IS SPECIFIC TO THE 2019 SEASON.
 void calcHatchAndBall(Blobs * blobs)
 {
+    // Calculate ball vision tape if there is any.
+    for(int i = 0; i < 6; i++)
+        if(blobs->getBlob(i).averageY() > HEIGHT / 2) // If blob(i) is in the top
+            for(int j = i + 1; j < 6; j++)            // half of the screen.
+            {
+                if(blobs->getBlob(j).averageY() > HEIGHT / 2)
+                    blobs->combineBlobs(i, j); // Combine blob(i) and blob(j) if
+            }                                  // blob(j) is also in the top half.
     
+    // Calculate the hatch vision tape.
 }
 
 
