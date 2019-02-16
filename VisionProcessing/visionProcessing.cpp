@@ -52,7 +52,7 @@ int main(int argc, char * argv[])
     cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter";
     cv::Mat * image = new cv::Mat();
     Blobs blobs(image, THRESH, DIST, AREA);
-    UDP udp(IP, PORT);
+    //UDP udp(IP, PORT);
     double fps = 0, center;
 
     cv::VideoCapture cap(0);
@@ -156,7 +156,6 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                 break;
                 ballTape = i;
-                ball = false;
             }
         
         if(ballTape != -1) // If a ball was not found.
@@ -253,7 +252,7 @@ void calcHatchAndBall(Blobs * blobs)
                 else if(blobs->getBlob(i).averageX() < blobs->getBlob(ball).averageX())
                 {
                     for(int j = i + 1; j < blobs->getNumBlobs(); j++)
-                        if(blobs->getBlob(j).averageY() < HEIGHT / 2 && blobs->getBlob(j).averageX() < blobs->getBlob(ball).averageX())
+                        if(blobs->getBlob(j).averageY() > HEIGHT / 2 && blobs->getBlob(j).averageX() < blobs->getBlob(ball).averageX())
                             blobs->combineBlobs(i, j);
                 }
             }
