@@ -19,7 +19,7 @@ void maintenance(cv::Mat * image, cv::String windowName);
 // Values for simulation.
 const bool TEST = true,
 	       VIDEO = true,
-	       RIO = false,
+	       RIO = true,
 	       BLUR = false,
            HATCH = true;
 
@@ -40,7 +40,7 @@ const char * IP = "10.37.92.43",
            * PORT= "5800";
 
 // For calculating distance and angle.
-const float BALLTAPEHEIGHT = 20,
+const float BALLTAPEHEIGHT = 56,
             HATCHTAPEHEIGHT = 20,
             BALLHEIGHT = 7.5,
             CAMANGLEY = 40.5,
@@ -111,14 +111,13 @@ int main(int argc, char * argv[])
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
         if(RIO)
-            //udp.send(const_cast<char *>(sendBackData(& blobs).c_str()));
+            std::cout << sendBackData(& blobs, "TAPE") << "1" << std::endl;
 
         if(TEST) // Show image.
         {
             cv::imshow(windowNameAfter, *image);
             if(cv::waitKey(1) == 27) break;
             fps = clock();
-            std::system("clear");
         }
     }
     
@@ -153,7 +152,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
                 dist = distance(BALLTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
-                sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+		sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                 break;
                 ballTape = i;
             }
