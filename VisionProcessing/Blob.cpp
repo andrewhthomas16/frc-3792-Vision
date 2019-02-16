@@ -91,6 +91,8 @@ Point2i Blob::operator [] (int i)
 {
     if(i < points.size())
         return points[i];
+    
+    return Point2i(-1, -1);
 }
 
 

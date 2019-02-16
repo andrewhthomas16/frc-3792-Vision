@@ -119,11 +119,14 @@ void Blobs::calcBlobs()
             dist = 0;
         }
     }
-    
+
     for(int i = 0; i < blobs.size(); i++)
-        if(blobs.at(i).size() < minArea)
-            blobs.erase(blobs.begin() + i); /* TODO: Implement erase*/
-    
+       	if(blobs.at(i).size() < minArea)
+        {
+            blobs.erase(blobs.begin() + i);
+            i--;
+        }
+
     sortBlobs(); // Sort blobs by array. Largest to smallest.
 }
 
@@ -166,13 +169,13 @@ void Blobs::sortBlobs()
 {
     Blob temp;
     for(int i = 0; i < blobs.size(); i++)
-        for(int j = 0; j < blobs.size() - 1; i++)
+        for(int j = 0; j < blobs.size() - 1; j++)
             if(blobs.at(j).size() < blobs.at(j + 1).size())
             {
                 temp = blobs.at(j);
                 blobs.at(j) = blobs.at(j + 1);
                 blobs.at(j + 1) = temp;
-            }
+	    }
 }
 
 

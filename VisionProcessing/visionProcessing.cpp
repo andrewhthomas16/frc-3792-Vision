@@ -9,9 +9,11 @@
 #include "UDP.h"
 
 
-std::string sendBackData(Blobs * blobs);
+std::string sendBackData(Blobs * blobs, std::string whichTarg);
 void calcHatchAndBall(Blobs * blobs);
 void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
+float distance(float heightIn, int heightPix, int numPixInCam, float camAngleY);
+float angle(float dist, int widthPix, int PixInCam);
 void maintenance(cv::Mat * image, cv::String windowName);
 
 // Values for simulation.
@@ -19,7 +21,7 @@ const bool TEST = true,
 	       VIDEO = true,
 	       RIO = false,
 	       BLUR = false,
-           HATCH = false;
+           HATCH = true;
 
 // Values for the camera.
 const double SATURATION = 1,// Values 0 - 1
@@ -30,12 +32,19 @@ const double SATURATION = 1,// Values 0 - 1
 const int HEIGHT = 120,
           WIDTH = 160,
           THRESH = 5,
-          DIST = 15,
-          AREA = 10;
+          DIST = 1,
+          AREA = 30;
 
 // Values for UDP
 const char * IP = "10.37.92.43",
-	       * PORT= "5800";
+           * PORT= "5800";
+
+// For calculating distance and angle.
+const float BALLTAPEHEIGHT = 20,
+            HATCHTAPEHEIGHT = 20,
+            BALLHEIGHT = 7.5,
+            CAMANGLEY = 40.5,
+            CAMANGLEX = 54;
 
 
 int main(int argc, char * argv[])
@@ -45,7 +54,7 @@ int main(int argc, char * argv[])
     Blobs blobs(image, THRESH, DIST, AREA);
     UDP udp(IP, PORT);
     double fps = 0, center;
-    
+
     cv::VideoCapture cap(0);
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, HEIGHT);
     cap.set(cv::CAP_PROP_FRAME_WIDTH, WIDTH);
@@ -63,7 +72,7 @@ int main(int argc, char * argv[])
         cv::namedWindow(windowNameRaw);
         cv::namedWindow(windowNameAfter);
     }
-    
+
     while(true)
     {
 	if(VIDEO)
@@ -73,7 +82,7 @@ int main(int argc, char * argv[])
 
         if(TEST)
             cv::imshow(windowNameRaw, *image);
-        
+
         // Check for failure
         if(image->empty())
         {
@@ -92,9 +101,7 @@ int main(int argc, char * argv[])
             cv::GaussianBlur(*image, *image, cv::Size(9, 9), 2, 2);
 
         blobs.calcBlobs();
-
         
-        std::cout << blobs.getNumBlobs() << std::endl;
         if(TEST)
             cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
 
@@ -104,11 +111,10 @@ int main(int argc, char * argv[])
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
         if(RIO)
-            udp.send(const_cast<char *>(sendBackData(& blobs).c_str()));
+            //udp.send(const_cast<char *>(sendBackData(& blobs).c_str()));
 
         if(TEST) // Show image.
         {
-
             cv::imshow(windowNameAfter, *image);
             if(cv::waitKey(1) == 27) break;
             fps = clock();
@@ -129,21 +135,80 @@ int main(int argc, char * argv[])
 
 
 // Function to compile information to send over UDP.
-std::string sendBackData(Blobs * blobs)
+std::string sendBackData(Blobs * blobs, std::string whichTarg)
 {
+    std::transform(whichTarg.begin(), whichTarg.end(), whichTarg.begin(), ::toupper);
+    
     std::string sendBack;
     int i = 1;
+    int ballTape = -1;
+    float dist, ang;
     
-    if(blobs->getNumBlobs() > 0) // Add the first Blob cords if there is one.
-        sendBack = std::to_string(blobs->getBlob(0).averageX()) + "," + std::to_string(blobs->getBlob(0).averageY());
     
-    do
+    if(whichTarg == "TAPE") // If you are looking for the vision tape.
     {
-        if(i < blobs->getNumBlobs()) // Add the rest of the Blob cords.
-            sendBack += ", " + std::to_string(blobs->getBlob(i).averageX()) + "," + std::to_string(blobs->getBlob(i).averageY());
+        for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find ball vision tape.
+            if(blobs->getBlob(i).averageY() < HEIGHT / 2)
+            {
+                // Find the distance and angle to the ball.
+                // Put the two values in UDP string.
+                dist = distance(BALLTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
+                sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                break;
+                ballTape = i;
+                ball = false;
+            }
+        
+        if(ballTape != -1) // If a ball was not found.
+            sendBack += " , , ";
+        
+        if(ballTape == -1)
+        {
+            for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++)
+                if(blobs->getBlob(i).averageY() > HEIGHT / 2)
+                {
+                    // Find the distance and angle to the ball.
+                    // Put the two values in UDP string.
+                    dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
+                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                }
+        }
         else
-            break;
-    }while(true);
+        {
+            for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++)// Try to find the left side hatch vision tape.
+            if(blobs->getBlob(i).averageY() > HEIGHT / 2 && blobs->getBlob(i).averageX() > blobs->getBlob(ballTape).averageX())
+            {
+                // Find the distance and angle to the ball.
+                // Put the two values in UDP string.
+                dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
+                sendBack += std::to_string(dist) + ", " + std::to_string(ang);
+            }
+            
+            for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find right side hatch vision tape.
+                if(blobs->getBlob(i).averageY() > HEIGHT / 2 && blobs->getBlob(i).averageX() < blobs->getBlob(ballTape).averageX())
+                {
+                    // Find the distance and angle to the ball.
+                    // Put the two values in UDP string.
+                    dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
+                    sendBack += std::to_string(dist) + ", "
+                    + std::to_string(ang);
+                }
+            
+
+        }
+    }
+    else if(whichTarg == "BALL") // If you are looking for a ball.
+    {
+        if(blobs->getNumBlobs() > 0)
+        {
+            dist = distance(BALLHEIGHT, blobs->getBlob(0).averageY(), HEIGHT, CAMANGLEY);
+            if(blobs->getBlob(0).averageX() < WIDTH / 2)
+                ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
+            else
+                ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
+
+        }
+    }
     
     return sendBack;
 }
@@ -153,16 +218,64 @@ std::string sendBackData(Blobs * blobs)
 // THIS FUNCTION IS SPECIFIC TO THE 2019 SEASON.
 void calcHatchAndBall(Blobs * blobs)
 {
+    int ball = -1;
     // Calculate ball vision tape if there is any.
-    for(int i = 0; i < 6; i++)
-        if(blobs->getBlob(i).averageY() > HEIGHT / 2) // If blob(i) is in the top
-            for(int j = i + 1; j < 6; j++)            // half of the screen.
+    for(int i = 0; i < 6 && i < blobs->getNumBlobs(); i++)
+        if(blobs->getBlob(i).averageY() < HEIGHT / 2) // If blob is in the top half.
+        {
+            for(int j = i + 1; j < 6 && j < blobs->getNumBlobs(); j++)
             {
-                if(blobs->getBlob(j).averageY() > HEIGHT / 2)
+                if(blobs->getBlob(j).averageY() < HEIGHT / 2)
                     blobs->combineBlobs(i, j); // Combine blob(i) and blob(j) if
             }                                  // blob(j) is also in the top half.
+            ball = i;
+        }
     
     // Calculate the hatch vision tape.
+    for(int i = 0; i < 6 && i < blobs->getNumBlobs(); i++)
+        if(blobs->getBlob(i).averageY() > HEIGHT / 2)
+        {
+            if(ball == -1)
+            {
+                for(int j = i + 1; j < blobs->getNumBlobs(); j++)
+                    if(blobs->getBlob(j).averageY() > HEIGHT / 2)
+                        blobs->combineBlobs(i, j);
+            }
+            else
+            {
+                if(blobs->getBlob(i).averageX() < blobs->getBlob(ball).averageX())
+                {
+                    for(int j = i + 1; j < blobs->getNumBlobs(); j++)
+                        if(blobs->getBlob(j).averageY() > HEIGHT / 2 && blobs->getBlob(j).averageX() < blobs->getBlob(ball).averageX())
+                            blobs->combineBlobs(i, j);
+                }
+                        
+                else if(blobs->getBlob(i).averageX() < blobs->getBlob(ball).averageX())
+                {
+                    for(int j = i + 1; j < blobs->getNumBlobs(); j++)
+                        if(blobs->getBlob(j).averageY() < HEIGHT / 2 && blobs->getBlob(j).averageX() < blobs->getBlob(ball).averageX())
+                            blobs->combineBlobs(i, j);
+                }
+            }
+        }
+            
+}
+
+
+/* Function to find the distance to an object given the height of the object
+   in inches, the hieght of the object in pixels, number of pixels in the
+   camera, and field of the view Y direction in degrees. */
+float distance(float heightIn, int heightPix, int numPixInCam, float camAngleY)
+{
+    return heightIn / tan((camAngleY * (atan(1) * 4 / 180) * heightPix) / numPixInCam);
+}
+
+
+/* Function to find the angle to an object given the distance to the object
+   the width in pixels, and the number of of pixels in the camera. */
+float angle(float dist, int widthPix, int PixInCam)
+{
+    return atan(tan((CAMANGLEX / 2) * atan(1) * 4) * (widthPix / PixInCam));
 }
 
 
