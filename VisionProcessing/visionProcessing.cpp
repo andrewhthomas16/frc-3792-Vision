@@ -152,15 +152,20 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
                 dist = distance(BALLTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
-		sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
-                break;
+                if(blobs->getBlob(0).averageX() < WIDTH / 2)
+                    ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
+                else
+                    ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
+                ang = angle(dist, );
+                sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                 ballTape = i;
+                break;
             }
         
         if(ballTape != -1) // If a ball was not found.
             sendBack += " , , ";
         
-        if(ballTape == -1)
+        if(ballTape == -1 && blobs->getNumBlobs() > 0)
         {
             for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++)
                 if(blobs->getBlob(i).averageY() > HEIGHT / 2)
@@ -168,6 +173,10 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
                     dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
+                    if(blobs->getBlob(0).averageX() < WIDTH / 2)
+                        ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
+                    else
+                        ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                 }
         }
@@ -179,7 +188,11 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
                 dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
-                sendBack += std::to_string(dist) + ", " + std::to_string(ang);
+                if(blobs->getBlob(0).averageX() < WIDTH / 2)
+                    ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
+                else
+                    ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
+                sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
             }
             
             for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find right side hatch vision tape.
@@ -188,15 +201,18 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
                     dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
-                    sendBack += std::to_string(dist) + ", "
-                    + std::to_string(ang);
+                    if(blobs->getBlob(0).averageX() < WIDTH / 2)
+                        ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
+                    else
+                        ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
+                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                 }
             
 
         }
     }
-    else if(whichTarg == "BALL") // If you are looking for a ball.
-    {
+    else if(whichTarg == "BALL" && blobs->getNumBlobs() > 0)
+    { // If you are looking for a ball.
         if(blobs->getNumBlobs() > 0)
         {
             dist = distance(BALLHEIGHT, blobs->getBlob(0).averageY(), HEIGHT, CAMANGLEY);
@@ -204,7 +220,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
             else
                 ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
-
+            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
         }
     }
     
