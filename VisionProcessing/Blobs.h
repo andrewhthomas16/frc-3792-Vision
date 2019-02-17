@@ -30,7 +30,7 @@ public:
     unsigned int getXcheck();
     unsigned int getYCheck();
     cv::Mat getImage();
-    Blob getBlob(int i);
+    Blob * getBlob(int i);
     int getNumBlobs();
     
     // Setters

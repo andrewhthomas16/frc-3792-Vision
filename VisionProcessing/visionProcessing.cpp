@@ -43,7 +43,7 @@ const char * IP = "10.37.92.43",
 const float BALLTAPEHEIGHT = 56,
             HATCHTAPEHEIGHT = 20,
             BALLHEIGHT = 7.5,
-            CAMANGLEY = 40.5,
+            CAMANGLEY = 20.25,
             CAMANGLEX = 54;
 
 
@@ -147,64 +147,64 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
     if(whichTarg == "TAPE") // If you are looking for the vision tape.
     {
         for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find ball vision tape.
-            if(blobs->getBlob(i).averageY() < HEIGHT / 2)
+            if(blobs->getBlob(i)->averageY() < HEIGHT / 2)
             {
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
-                dist = distance(BALLTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
-                if(blobs->getBlob(0).averageX() < WIDTH / 2)
-                    ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
-                else
-                    ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
-                ang = angle(dist, );
+                dist = distance(BALLTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT, CAMANGLEY);
+                if(blobs->getBlob(0)->averageX() < WIDTH / 2) // Angle to left.
+                    ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH);
+                else // Angle to right.
+                    ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH);
                 sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                 ballTape = i;
                 break;
             }
         
         if(ballTape != -1) // If a ball was not found.
-            sendBack += " , , ";
+            sendBack += " ,  , , ";
         
         if(ballTape == -1 && blobs->getNumBlobs() > 0)
         {
             for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++)
-                if(blobs->getBlob(i).averageY() > HEIGHT / 2)
+                if(blobs->getBlob(i)->averageY() > HEIGHT / 2)
                 {
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
-                    dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
-                    if(blobs->getBlob(0).averageX() < WIDTH / 2)
-                        ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
-                    else
-                        ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
+                    dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT, CAMANGLEY);
+                    if(blobs->getBlob(0)->averageX() < WIDTH / 2)// Angle to left.
+                        ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH);
+                    else // Angle to right.
+                        ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH);
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                    break;
                 }
         }
         else
         {
-            for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++)// Try to find the left side hatch vision tape.
-            if(blobs->getBlob(i).averageY() > HEIGHT / 2 && blobs->getBlob(i).averageX() > blobs->getBlob(ballTape).averageX())
+            for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++)// Try to find the right side hatch vision tape.
+            if(blobs->getBlob(i)->averageY() > HEIGHT / 2 && blobs->getBlob(i)->averageX() > blobs->getBlob(ballTape)->averageX())
             {
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
-                dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
-                if(blobs->getBlob(0).averageX() < WIDTH / 2)
-                    ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
-                else
-                    ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
+                dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT, CAMANGLEY);
+                if(blobs->getBlob(0)->averageX() < WIDTH / 2) // Angle to left.
+                    ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH);
+                else // Angle to right.
+                    ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH);
                 sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
             }
             
-            for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find right side hatch vision tape.
-                if(blobs->getBlob(i).averageY() > HEIGHT / 2 && blobs->getBlob(i).averageX() < blobs->getBlob(ballTape).averageX())
+            for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find left side hatch vision tape.
+                if(blobs->getBlob(i)->averageY() > HEIGHT / 2 && blobs->getBlob(i)->averageX() < blobs->getBlob(ballTape)->averageX())
                 {
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
-                    dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i).averageY(), HEIGHT, CAMANGLEY);
-                    if(blobs->getBlob(0).averageX() < WIDTH / 2)
-                        ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
-                    else
-                        ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
+                    dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT, CAMANGLEY);
+                    if(blobs->getBlob(0)->averageX() < WIDTH / 2) // Angle to left.
+                        ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH);
+                    else // Angle to right.
+                        ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH);
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                 }
             
@@ -215,11 +215,11 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
     { // If you are looking for a ball.
         if(blobs->getNumBlobs() > 0)
         {
-            dist = distance(BALLHEIGHT, blobs->getBlob(0).averageY(), HEIGHT, CAMANGLEY);
-            if(blobs->getBlob(0).averageX() < WIDTH / 2)
-                ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0).averageX(), WIDTH);
-            else
-                ang = angle(dist, blobs->getBlob(0).averageX() - (WIDTH / 2), WIDTH);
+            dist = distance(BALLHEIGHT, blobs->getBlob(0)->averageY(), HEIGHT, CAMANGLEY);
+            if(blobs->getBlob(0)->averageX() < WIDTH / 2) // Angle to left.
+                ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH);
+            else // Angle to right.
+                ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH);
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
         }
     }
@@ -235,11 +235,11 @@ void calcHatchAndBall(Blobs * blobs)
     int ball = -1;
     // Calculate ball vision tape if there is any.
     for(int i = 0; i < 6 && i < blobs->getNumBlobs(); i++)
-        if(blobs->getBlob(i).averageY() < HEIGHT / 2) // If blob is in the top half.
+        if(blobs->getBlob(i)->averageY() < HEIGHT / 2) // If blob is in the top half.
         {
             for(int j = i + 1; j < 6 && j < blobs->getNumBlobs(); j++)
             {
-                if(blobs->getBlob(j).averageY() < HEIGHT / 2)
+                if(blobs->getBlob(j)->averageY() < HEIGHT / 2)
                     blobs->combineBlobs(i, j); // Combine blob(i) and blob(j) if
             }                                  // blob(j) is also in the top half.
             ball = i;
@@ -247,27 +247,26 @@ void calcHatchAndBall(Blobs * blobs)
     
     // Calculate the hatch vision tape.
     for(int i = 0; i < 6 && i < blobs->getNumBlobs(); i++)
-        if(blobs->getBlob(i).averageY() > HEIGHT / 2)
+        if(blobs->getBlob(i)->averageY() > HEIGHT / 2)
         {
             if(ball == -1)
             {
                 for(int j = i + 1; j < blobs->getNumBlobs(); j++)
-                    if(blobs->getBlob(j).averageY() > HEIGHT / 2)
+                    if(blobs->getBlob(j)->averageY() > HEIGHT / 2)
                         blobs->combineBlobs(i, j);
             }
             else
             {
-                if(blobs->getBlob(i).averageX() < blobs->getBlob(ball).averageX())
-                {
+                if(blobs->getBlob(i)->averageX() < blobs->getBlob(ball)->averageX())
+                { // Check for and combine left side hatch vision tape.
                     for(int j = i + 1; j < blobs->getNumBlobs(); j++)
-                        if(blobs->getBlob(j).averageY() > HEIGHT / 2 && blobs->getBlob(j).averageX() < blobs->getBlob(ball).averageX())
+                        if(blobs->getBlob(j)->averageY() > HEIGHT / 2 && blobs->getBlob(j)->averageX() < blobs->getBlob(ball)->averageX())
                             blobs->combineBlobs(i, j);
                 }
-                        
-                else if(blobs->getBlob(i).averageX() < blobs->getBlob(ball).averageX())
-                {
+                else if(blobs->getBlob(i)->averageX() > blobs->getBlob(ball)->averageX())
+                {// Check for and combine right side vision tape.
                     for(int j = i + 1; j < blobs->getNumBlobs(); j++)
-                        if(blobs->getBlob(j).averageY() > HEIGHT / 2 && blobs->getBlob(j).averageX() < blobs->getBlob(ball).averageX())
+                        if(blobs->getBlob(j)->averageY() > HEIGHT / 2 && blobs->getBlob(j)->averageX() > blobs->getBlob(ball)->averageX())
                             blobs->combineBlobs(i, j);
                 }
             }

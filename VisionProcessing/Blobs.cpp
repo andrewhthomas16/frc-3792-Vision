@@ -187,7 +187,7 @@ unsigned int Blobs::getMinArea(){ return minArea; }
 unsigned int Blobs::getXcheck(){ return xCheck; }
 unsigned int Blobs::getYCheck(){ return yCheck; }
 cv::Mat Blobs::getImage(){ return *image; }
-Blob Blobs::getBlob(int i){ return blobs.at(i); }
+Blob * Blobs::getBlob(int i){ return &blobs.at(i); }
 int Blobs::getNumBlobs(){ return blobs.size(); }
 
 
