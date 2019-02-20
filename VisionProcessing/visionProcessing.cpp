@@ -40,9 +40,9 @@ const char * IP = "10.37.92.43",
            * PORT= "5800";
 
 // For calculating distance and angle.
-const float BALLTAPEHEIGHT = 56,
-            HATCHTAPEHEIGHT = 20,
-            BALLHEIGHT = 7.5,
+const float BALLTAPEHEIGHT = 3.8125,
+            HATCHTAPEHEIGHT = -3.8125,
+            BALLHEIGHT = -25.3922,
             CAMANGLEY = 20.25,
             CAMANGLEX = 54;
 
@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
         if(RIO)
-            std::cout << sendBackData(& blobs, "TAPE") << "1" << std::endl;
+            std::cout << sendBackData(& blobs, "TAPE") << std::endl;
 
         if(TEST) // Show image.
         {
@@ -161,8 +161,8 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 break;
             }
         
-        if(ballTape != -1) // If a ball was not found.
-            sendBack += " ,  , , ";
+        if(ballTape == -1) // If a ball was not found.
+            sendBack += " , ,";
         
         if(ballTape == -1 && blobs->getNumBlobs() > 0)
         {
