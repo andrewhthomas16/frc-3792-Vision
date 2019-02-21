@@ -13,7 +13,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg);
 void calcHatchAndBall(Blobs * blobs);
 void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
 float distance(float heightIn, int heightPix, int numPixInCam, float camAngleY);
-float angle(float dist, int widthPix, int PixInCam);
+float angle(float dist, int widthPix, int numPixInCam, float camAngleX);
 void maintenance(cv::Mat * image, cv::String windowName);
 
 // Values for simulation.
@@ -44,7 +44,7 @@ const float BALLTAPEHEIGHT = 3.8125,
             HATCHTAPEHEIGHT = -3.8125,
             BALLHEIGHT = -25.3922,
             CAMANGLEY = 20.25,
-            CAMANGLEX = 54;
+            CAMANGLEX = 27;
 
 
 int main(int argc, char * argv[])
@@ -151,11 +151,11 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
             {
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
-                dist = distance(BALLTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT, CAMANGLEY);
+                dist = distance(BALLTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT / 2, CAMANGLEY);
                 if(blobs->getBlob(0)->averageX() < WIDTH / 2) // Angle to left.
-                    ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH);
+                    ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH / 2, CAMANGLEX);
                 else // Angle to right.
-                    ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH);
+                    ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH / 2, CAMANGLEX);
                 sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                 ballTape = i;
                 break;
@@ -171,11 +171,11 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 {
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
-                    dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT, CAMANGLEY);
+                    dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT / 2, CAMANGLEY);
                     if(blobs->getBlob(0)->averageX() < WIDTH / 2)// Angle to left.
-                        ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH);
+                        ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH, CAMANGLEX);
                     else // Angle to right.
-                        ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH);
+                        ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH / 2, CAMANGLEX);
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                     break;
                 }
@@ -187,11 +187,11 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
             {
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
-                dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT, CAMANGLEY);
+                dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT / 2, CAMANGLEY);
                 if(blobs->getBlob(0)->averageX() < WIDTH / 2) // Angle to left.
-                    ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH);
+                    ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH / 2, CAMANGLEX);
                 else // Angle to right.
-                    ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH);
+                    ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH / 2, CAMANGLEX);
                 sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
             }
             
@@ -202,9 +202,9 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                     // Put the two values in UDP string.
                     dist = distance(HATCHTAPEHEIGHT, blobs->getBlob(i)->averageY(), HEIGHT, CAMANGLEY);
                     if(blobs->getBlob(0)->averageX() < WIDTH / 2) // Angle to left.
-                        ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH);
+                        ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH / 2, CAMANGLEX);
                     else // Angle to right.
-                        ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH);
+                        ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH / 2, CAMANGLEX);
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                 }
             
@@ -215,11 +215,11 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
     { // If you are looking for a ball.
         if(blobs->getNumBlobs() > 0)
         {
-            dist = distance(BALLHEIGHT, blobs->getBlob(0)->averageY(), HEIGHT, CAMANGLEY);
+            dist = distance(BALLHEIGHT, blobs->getBlob(0)->averageY(), HEIGHT / 2, CAMANGLEY);
             if(blobs->getBlob(0)->averageX() < WIDTH / 2) // Angle to left.
-                ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH);
+                ang = angle(dist, (WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH / 2, CAMANGLEX);
             else // Angle to right.
-                ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH);
+                ang = angle(dist, blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH / 2, CAMANGLEX);
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
         }
     }
@@ -280,15 +280,17 @@ void calcHatchAndBall(Blobs * blobs)
    camera, and field of the view Y direction in degrees. */
 float distance(float heightIn, int heightPix, int numPixInCam, float camAngleY)
 {
-    return heightIn / tan((camAngleY * (atan(1) * 4 / 180) * heightPix) / numPixInCam);
+    const float radConv = 3.14159265 / 180;
+    return heightIn / tan((camAngleY * heightPix * radConv) / numPixInCam);
 }
 
 
 /* Function to find the angle to an object given the distance to the object
    the width in pixels, and the number of of pixels in the camera. */
-float angle(float dist, int widthPix, int PixInCam)
+float angle(float dist, int widthPix, int numPixInCam, float camAngleX)
 {
-    return atan(tan((CAMANGLEX / 2) * atan(1) * 4) * (widthPix / PixInCam));
+    const float radConv = 3.14159265 / 180;
+    return atan(tan(camAngleX * radConv) * (widthPix / numPixInCam));
 }
 
 
