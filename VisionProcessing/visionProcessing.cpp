@@ -281,7 +281,7 @@ void calcHatchAndBall(Blobs * blobs)
 float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX)
 {
     const float radConv = 3.14159265 / 180;
-    return sqrt(((areaIn * camArea) / areaPix) * 4 * tan(camAngleY * radConv) * tan(camAngleX * radConv));
+    return sqrt(((areaIn * camArea) / areaPix) * (tan(camAngleY * radConv) * tan(camAngleX * radConv) / 4));
 }
 
 
