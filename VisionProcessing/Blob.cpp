@@ -93,6 +93,40 @@ float Blob::area()
 }
 
 
+// Method to return the width of a blob in pixels.
+float Blob::width()
+{
+    float minX = -1, maxX = -1;
+    
+    for(int i = 0; i < points.size(); i++)
+    {
+        if(points[i].x < minX || minX == -1)
+            minX = i;
+        if(points[i].x > maxX || maxX == -1)
+            maxX = i;
+    }
+    
+    return maxX - minX;
+}
+
+
+// Method to return the height of a blob in pixels.
+float Blob::height()
+{
+    float minY = -1, maxY = -1;
+    
+    for(int i = 0; i < points.size(); i++)
+    {
+        if(points[i].y < minY || minY == -1)
+            minY = i;
+        if(points[i].y > maxY || maxY == -1)
+            maxY = i;
+    }
+    
+    return maxY - minY;
+}
+
+
 // Return a Point2i object in the points vector at i.
 Point2i Blob::operator [] (int i)
 {

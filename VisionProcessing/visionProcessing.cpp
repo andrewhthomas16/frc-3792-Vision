@@ -7,6 +7,7 @@
 #include "Blob.h"
 #include "Point2i.h"
 #include "UDP.h"
+#include "LookUp.h"
 
 
 std::string sendBackData(Blobs * blobs, std::string whichTarg);
@@ -45,6 +46,8 @@ const float TAPEAREA = 22,
             CAMANGLEY = 20.25,
             CAMANGLEX = 27,
             CAMAREA = 19200;
+
+const LookUp LOOKUPTABLE("points.txt");
 
 
 int main(int argc, char * argv[])
@@ -141,7 +144,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
     std::string sendBack;
     int i = 1;
     int ballTape = -1;
-    float dist, ang;
+    float dist, theta, phi;
     
     
     if(whichTarg == "TAPE") // If you are looking for the vision tape.
@@ -152,11 +155,8 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
                 dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
-                if(blobs->getBlob(i)->averageX() < WIDTH / 2) // Angle to left.
-                    ang = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
-                else // Angle to right.
-                    ang = angle(blobs->getBlob(i)->averageX() - (WIDTH / 2), WIDTH / 2, CAMANGLEX);
-                sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
+                sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
                 ballTape = i;
                 break;
             }
@@ -172,11 +172,8 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
                     dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
-                    if(blobs->getBlob(i)->averageX() < WIDTH / 2)// Angle to left.
-                        ang = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH, CAMANGLEX);
-                    else // Angle to right.
-                        ang = angle(blobs->getBlob(i)->averageX() - (WIDTH / 2), WIDTH / 2, CAMANGLEX);
-                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                    theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH, CAMANGLEX);
+                    sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
 			break;
                 }
         }
@@ -188,11 +185,8 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
                 dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
-                if(blobs->getBlob(i)->averageX() < WIDTH / 2) // Angle to left.
-                    ang = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
-                else // Angle to right.
-                    ang = angle(blobs->getBlob(i)->averageX() - (WIDTH / 2), WIDTH / 2, CAMANGLEX);
-                sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
+                sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
             }
             
             for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find left side hatch vision tape.
@@ -201,11 +195,8 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
                     dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
-                    if(blobs->getBlob(i)->averageX() < WIDTH / 2) // Angle to left.
-                        ang = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
-                    else // Angle to right.
-                        ang = angle(blobs->getBlob(i)->averageX() - (WIDTH / 2), WIDTH / 2, CAMANGLEX);
-                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                    theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
+                    sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
                 }
             
 
@@ -216,11 +207,8 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
         if(blobs->getNumBlobs() > 0)
         {
             dist = distance(BALLAREA, blobs->getBlob(0)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
-            if(blobs->getBlob(0)->averageX() < WIDTH / 2) // Angle to left.
-                ang = angle((WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH / 2, CAMANGLEX);
-            else // Angle to right.
-                ang = angle(blobs->getBlob(0)->averageX() - (WIDTH / 2), WIDTH / 2, CAMANGLEX);
-            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+            theta = angle((WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH / 2, CAMANGLEX);
+            sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
         }
     }
     
@@ -281,7 +269,7 @@ void calcHatchAndBall(Blobs * blobs)
 float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX)
 {
     const float radConv = 3.14159265 / 180;
-    return sqrt(((areaIn * camArea) / areaPix) * (tan(camAngleY * radConv) * tan(camAngleX * radConv) / 4));
+    return sqrt(((areaIn * camArea) / areaPix) / (4 * tan(camAngleY * radConv) * tan(camAngleX * radConv)));
 }
 
 
