@@ -46,6 +46,7 @@ const float TAPEAREA = 22,
             CAMANGLEY = 20.25,
             CAMANGLEX = 27,
             CAMAREA = 19200;
+            DISTSCALE = 1.2;
 
 const LookUp LOOKUPTABLE("points.txt");
 
@@ -154,7 +155,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
             {
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
-                dist = 1.2 * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                 theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
                 sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
                 ballTape = i;
@@ -171,7 +172,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 {
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
-                    dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
+                    dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH, CAMANGLEX);
                     sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
 			break;
@@ -184,7 +185,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
             {
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
-                dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
+                dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                 theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
                 sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
             }
@@ -194,7 +195,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 {
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
-                    dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
+                    dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
                     sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
                 }
@@ -206,7 +207,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
     { // If you are looking for a ball.
         if(blobs->getNumBlobs() > 0)
         {
-            dist = distance(BALLAREA, blobs->getBlob(0)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
+            dist = DISTSCALE * distance(BALLAREA, blobs->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             theta = angle((WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH / 2, CAMANGLEX);
             sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
         }
