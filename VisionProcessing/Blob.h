@@ -26,6 +26,7 @@ public:
     int averageX();
     int averageY();
     Point2i average();
+    float area();
     Point2i operator [] (int i);
     void operator = (Blob arr);
     void operator += (Blob arr);

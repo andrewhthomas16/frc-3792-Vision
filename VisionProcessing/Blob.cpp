@@ -86,6 +86,13 @@ Point2i Blob::average()
 }
 
 
+//Method to return the area of the blob in pixels.
+float Blob::area()
+{
+    return points.size();
+}
+
+
 // Return a Point2i object in the points vector at i.
 Point2i Blob::operator [] (int i)
 {

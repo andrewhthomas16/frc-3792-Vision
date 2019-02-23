@@ -43,7 +43,8 @@ const char * IP = "10.37.92.43",
 const float TAPEAREA = 22,
             BALLAREA = 176.714587,
             CAMANGLEY = 20.25,
-            CAMANGLEX = 27;
+            CAMANGLEX = 27,
+            CAMAREA = 19200;
 
 
 int main(int argc, char * argv[])
@@ -131,7 +132,6 @@ int main(int argc, char * argv[])
     return 0;
 }
 
-float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX)
 
 // Function to compile information to send over UDP.
 std::string sendBackData(Blobs * blobs, std::string whichTarg)
@@ -151,7 +151,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
             {
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
-                dist = distance(TAPEAREA, blobs->getBlob(i)->area(), HEIGHT / 2, WIDTH / 2);
+                dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
                 if(blobs->getBlob(i)->averageX() < WIDTH / 2) // Angle to left.
                     ang = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
                 else // Angle to right.
@@ -171,7 +171,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 {
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
-                    dist = distance(TAPEAREA, blobs->getBlob(i)->area(), HEIGHT / 2, WIDTH / 2);
+                    dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
                     if(blobs->getBlob(i)->averageX() < WIDTH / 2)// Angle to left.
                         ang = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH, CAMANGLEX);
                     else // Angle to right.
@@ -187,7 +187,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
             {
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
-                dist = distance(TAPEAREA, blobs->getBlob(i)->area(), HEIGHT / 2, WIDTH / 2);
+                dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
                 if(blobs->getBlob(i)->averageX() < WIDTH / 2) // Angle to left.
                     ang = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
                 else // Angle to right.
@@ -200,7 +200,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 {
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
-                    dist = distance(TAPEAREA, blobs->getBlob(i)->area(), HEIGHT / 2, WIDTH / 2);
+                    dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
                     if(blobs->getBlob(i)->averageX() < WIDTH / 2) // Angle to left.
                         ang = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
                     else // Angle to right.
@@ -215,7 +215,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
     { // If you are looking for a ball.
         if(blobs->getNumBlobs() > 0)
         {
-            dist = distance(BALLAREA, blobs->getBlob(0)->area(), HEIGHT / 2, WIDTH / 2);
+            dist = distance(BALLAREA, blobs->getBlob(0)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
             if(blobs->getBlob(0)->averageX() < WIDTH / 2) // Angle to left.
                 ang = angle((WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH / 2, CAMANGLEX);
             else // Angle to right.
