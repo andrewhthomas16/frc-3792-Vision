@@ -45,7 +45,7 @@ const float TAPEAREA = 22,
             BALLAREA = 176.714587,
             CAMANGLEY = 20.25,
             CAMANGLEX = 27,
-            CAMAREA = 19200;
+            CAMAREA = 19200,
             DISTSCALE = 1.2;
 
 const LookUp LOOKUPTABLE("points.txt");
