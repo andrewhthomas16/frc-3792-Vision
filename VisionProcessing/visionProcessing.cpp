@@ -97,7 +97,7 @@ int main(int argc, char * argv[])
         
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
-        filter(cv::Scalar(40, 0, 163), cv::Scalar(100, 130, 255), *image, *image);
+        filter(cv::Scalar(50, 120, 100), cv::Scalar(100, 255, 255), *image, *image);
         
         // Blur image to get rid of the bad data points.
         if(BLUR)
@@ -154,7 +154,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
             {
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
-                dist = distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, HEIGHT / 2, WIDTH / 2);
+                dist = 1.2 * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                 theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
                 sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
                 ballTape = i;
@@ -269,6 +269,7 @@ void calcHatchAndBall(Blobs * blobs)
 float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX)
 {
     const float radConv = 3.14159265 / 180;
+	std::cout << areaPix << std::endl;
     return sqrt(((areaIn * camArea) / areaPix) / (4 * tan(camAngleY * radConv) * tan(camAngleX * radConv)));
 }
 
