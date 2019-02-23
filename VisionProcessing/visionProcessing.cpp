@@ -12,7 +12,7 @@
 std::string sendBackData(Blobs * blobs, std::string whichTarg);
 void calcHatchAndBall(Blobs * blobs);
 void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
-float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX)
+float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX);
 float angle(float widthPix, float numPixInCam, float camAngleX);
 void maintenance(cv::Mat * image, cv::String windowName);
 
