@@ -173,7 +173,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                     // Find the distance and angle to the ball.
                     // Put the two values in UDP string.
                     dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
-                    theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH, CAMANGLEX);
+                    theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
                     sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
 			break;
                 }
@@ -208,7 +208,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
         if(blobs->getNumBlobs() > 0)
         {
             dist = DISTSCALE * distance(BALLAREA, blobs->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
-            theta = angle((WIDTH / 2) - blobs->getBlob(0)->averageX(), WIDTH / 2, CAMANGLEX);
+            theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
             sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
         }
     }
