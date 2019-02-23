@@ -151,7 +151,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
     if(whichTarg == "TAPE") // If you are looking for the vision tape.
     {
         for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find ball vision tape.
-            if(blobs->getBlob(i)->averageY() < HEIGHT / 2)
+            if(blobs->getBlob(i)->averageY() <= HEIGHT / 2)
             {
                 // Find the distance and angle to the ball.
                 // Put the two values in UDP string.
