@@ -1,4 +1,4 @@
-// visionProcessing.cpp
+// final.cpp
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -14,8 +14,16 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg);
 void calcHatchAndBall(Blobs * blobs);
 void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
 float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX);
+float facingAng(float height, float width);
 float angle(float widthPix, float numPixInCam, float camAngleX);
 void maintenance(cv::Mat * image, cv::String windowName);
+
+struct tapeLine // Struct to combine a white line with its
+{               // corresponding vision tape.
+    Blob tape;
+    Blob line;
+};
+
 
 // Values for simulation.
 const bool TEST = true,
@@ -48,14 +56,13 @@ const float TAPEAREA = 22,
             CAMAREA = 19200,
             DISTSCALE = 1.2;
 
-const LookUp LOOKUPTABLE("points.txt");
-
 
 int main(int argc, char * argv[])
 {
     cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter";
     cv::Mat * image = new cv::Mat();
     Blobs blobs(image, THRESH, DIST, AREA);
+    tapeLine * comboBlob;
     //UDP udp(IP, PORT);
     double fps = 0, center;
 
@@ -148,74 +155,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
     float dist, theta, phi;
     
   
-    if(whichTarg == "TAPE") // If you are looking for the vision tape.
-    {
-        for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find ball vision tape.
-            if(blobs->getBlob(i)->average().y <= HEIGHT / 2)
-            {
-                // Find the distance and angle to the ball.
-                // Put the two values in UDP string.
-                dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
-                theta = angle((WIDTH / 2) - blobs->getBlob(i)->average().x, WIDTH / 2, CAMANGLEX);
-                sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", ";
-		ballTape = i;
-                break;
-            }
-        
-        if(ballTape == -1) // If a ball was not found.
-            sendBack += " , ,";
-        
-        if(ballTape == -1 && blobs->getNumBlobs() > 0)
-        {
-            for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++)
-                if(blobs->getBlob(i)->average().y > HEIGHT / 2)
-                {
-                    // Find the distance and angle to the ball.
-                    // Put the two values in UDP string.
-                    dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
-                    theta = angle((WIDTH / 2) - blobs->getBlob(i)->average().x, WIDTH / 2, CAMANGLEX);
-                    sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", ";
-
-			break;
-                }
-        }
-        else
-        {
-            for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++)// Try to find the right side hatch vision tape.
-            if(blobs->getBlob(i)->average().y > HEIGHT / 2 && blobs->getBlob(i)->average().x > blobs->getBlob(ballTape)->average().x)
-            {
-                // Find the distance and angle to the ball.
-                // Put the two values in UDP string.
-                dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
-                theta = angle((WIDTH / 2) - blobs->getBlob(i)->average().x, WIDTH / 2, CAMANGLEX);
-                sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", ";
-
-            }
-            
-            for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find left side hatch vision tape.
-                if(blobs->getBlob(i)->average().y > HEIGHT / 2 && blobs->getBlob(i)->average().x < blobs->getBlob(ballTape)->average().x)
-                {
-                    // Find the distance and angle to the ball.
-                    // Put the two values in UDP string.
-                    dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
-                    theta = angle((WIDTH / 2) - blobs->getBlob(i)->average().x, WIDTH / 2, CAMANGLEX);
-                    sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", ";
-
-                }
-            
-
-        }
-    }
-    else if(whichTarg == "BALL" && blobs->getNumBlobs() > 0)
-    { // If you are looking for a ball.
-        if(blobs->getNumBlobs() > 0)
-        {
-            dist = DISTSCALE * distance(BALLAREA, blobs->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
-            theta = angle((WIDTH / 2) - blobs->getBlob(i)->average().x, WIDTH / 2, CAMANGLEX);
-            sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", ";
-
-        }
-    }
+    
     
 
 	return sendBack;
@@ -296,6 +236,15 @@ float angle(float widthPix, float numPixInCam, float camAngleX)
 }
 
 
+/* Function to find the facing angle based off of the bounding box of the white
+   lines in the 2019 frc game.*/
+float facingAng(float height, float width)
+{
+    const float radConv = 3.14159265 / 180;
+    return atan((height / width) * radConv);
+}
+
+
 // Filter the inputImage based off of the upper and lower range
 // and store the result in outputImage.
 void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & inputImage, cv::Mat & outputImage)
@@ -324,4 +273,5 @@ void maintenance(cv::Mat * image, cv::String windowName)
     // Change the color space from BGR to HSV.
     cv::cvtColor(*image , *image, cv::COLOR_BGR2HSV);
 }
+
 

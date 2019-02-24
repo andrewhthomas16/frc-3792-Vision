@@ -7,7 +7,10 @@
 
 
 // Constructors
-Blob::Blob(){}
+Blob::Blob()
+{
+    valsCalc = false;
+}
 Blob::Blob(int size)
 {
     points.resize(size);
@@ -134,8 +137,8 @@ void Blob::calculate()
         return;
     else
     {
-        aveY();
-        aveX();
+        averageY();
+        averageX();
         calcWidth();
         calcHeight();
         
@@ -155,7 +158,7 @@ Point2i Blob::average()
 //Method to return the width in pixels.
 float Blob::width()
 {
-    calculate()
+    calculate();
     return wid;
 }
 
@@ -191,8 +194,8 @@ void Blob::operator = (Blob arr)
     points = arr.points;
     aveX = arr.aveX;
     aveY = arr.aveY;
-    width = arr.width;
-    height = arr.height;
+    wid = arr.wid;
+    hei = arr.hei;
     valsCalc = arr.valsCalc;
 }
 
