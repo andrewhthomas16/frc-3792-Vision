@@ -98,7 +98,7 @@ int main(int argc, char * argv[])
         
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
-        filter(cv::Scalar(50, 120, 100), cv::Scalar(100, 255, 255), *image, *image);
+        filter(cv::Scalar(40, 10, 140), cv::Scalar(100, 255, 255), *image, *image);
         
         // Blur image to get rid of the bad data points.
         if(BLUR)
@@ -147,7 +147,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
     int ballTape = -1;
     float dist, theta, phi;
     
-    
+  
     if(whichTarg == "TAPE") // If you are looking for the vision tape.
     {
         for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find ball vision tape.
@@ -157,8 +157,8 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 // Put the two values in UDP string.
                 dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                 theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
-                sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
-                ballTape = i;
+                sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", ";
+		ballTape = i;
                 break;
             }
         
@@ -174,7 +174,8 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                     // Put the two values in UDP string.
                     dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
-                    sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
+                    sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", ";
+
 			break;
                 }
         }
@@ -187,7 +188,8 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                 // Put the two values in UDP string.
                 dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                 theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
-                sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
+                sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", ";
+
             }
             
             for(int i = 0; i < 3 && i < blobs->getNumBlobs(); i++) // Try to find left side hatch vision tape.
@@ -197,7 +199,8 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
                     // Put the two values in UDP string.
                     dist = DISTSCALE * distance(TAPEAREA, blobs->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
-                    sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
+                    sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", ";
+
                 }
             
 
@@ -209,11 +212,13 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
         {
             dist = DISTSCALE * distance(BALLAREA, blobs->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             theta = angle((WIDTH / 2) - blobs->getBlob(i)->averageX(), WIDTH / 2, CAMANGLEX);
-            sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", " + std::to_string(LOOKUPTABLE.getVal(blobs->getBlob(i)->width() / blobs->getBlob(i)->height())) + ", ";
+            sendBack += std::to_string(dist) + ", " + std::to_string(theta) + ", ";
+
         }
     }
     
-    return sendBack;
+
+	return sendBack;
 }
 
 
@@ -221,6 +226,7 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
 // THIS FUNCTION IS SPECIFIC TO THE 2019 SEASON.
 void calcHatchAndBall(Blobs * blobs)
 {
+	std::cout << "A" << std::endl;
     int ball = -1;
     // Calculate ball vision tape if there is any.
     for(int i = 0; i < 6 && i < blobs->getNumBlobs(); i++)
@@ -260,7 +266,7 @@ void calcHatchAndBall(Blobs * blobs)
                 }
             }
         }
-            
+            std::cout << "B" << std::endl;
 }
 
 

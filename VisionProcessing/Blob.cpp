@@ -101,9 +101,9 @@ float Blob::width()
     for(int i = 0; i < points.size(); i++)
     {
         if(points[i].x < minX || minX == -1)
-            minX = i;
+            minX = points[i].x;
         if(points[i].x > maxX || maxX == -1)
-            maxX = i;
+            maxX = points[i].x;
     }
     
     return maxX - minX;
@@ -118,9 +118,9 @@ float Blob::height()
     for(int i = 0; i < points.size(); i++)
     {
         if(points[i].y < minY || minY == -1)
-            minY = i;
+            minY = points[i].y;
         if(points[i].y > maxY || maxY == -1)
-            maxY = i;
+            maxY = points[i].y;
     }
     
     return maxY - minY;
