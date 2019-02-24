@@ -239,34 +239,46 @@ void calcHatchAndBall(Blobs * blobs)
             }                                  // blob(j) is also in the top half.
             ball = i;
         }
-    
+	std::cout << "B" << std::endl;    
     // Calculate the hatch vision tape.
     for(int i = 0; i < 6 && i < blobs->getNumBlobs(); i++)
         if(blobs->getBlob(i)->averageY() > HEIGHT / 2)
         {
             if(ball == -1)
             {
+		std::cout << "C" << std::endl;
                 for(int j = i + 1; j < blobs->getNumBlobs(); j++)
                     if(blobs->getBlob(j)->averageY() > HEIGHT / 2)
                         blobs->combineBlobs(i, j);
-            }
+		std::cout << "D" << std::endl;            
+}
             else
             {
                 if(blobs->getBlob(i)->averageX() < blobs->getBlob(ball)->averageX())
                 { // Check for and combine left side hatch vision tape.
+			std::cout << "E" << std::endl;
                     for(int j = i + 1; j < blobs->getNumBlobs(); j++)
+{
+std::cout << "1" <<std::endl;
                         if(blobs->getBlob(j)->averageY() > HEIGHT / 2 && blobs->getBlob(j)->averageX() < blobs->getBlob(ball)->averageX())
+{
+	std::cout << "2" <<std::endl;
                             blobs->combineBlobs(i, j);
-                }
+}
+}
+			std::cout << "F" << std::endl;                
+}
                 else if(blobs->getBlob(i)->averageX() > blobs->getBlob(ball)->averageX())
                 {// Check for and combine right side vision tape.
+			std::cout << "G" << std::endl;
                     for(int j = i + 1; j < blobs->getNumBlobs(); j++)
                         if(blobs->getBlob(j)->averageY() > HEIGHT / 2 && blobs->getBlob(j)->averageX() > blobs->getBlob(ball)->averageX())
                             blobs->combineBlobs(i, j);
+		std::cout << "H" << std::endl;
                 }
             }
         }
-            std::cout << "B" << std::endl;
+	std::cout << "I" << std::endl;
 }
 
 
