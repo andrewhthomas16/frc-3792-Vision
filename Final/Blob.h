@@ -31,6 +31,7 @@ public:
     void operator = (Blob arr);
     void operator += (Blob arr);
 	int size();
+    float topRowsAverageX(int rows);
     
 private:
     void calculate();

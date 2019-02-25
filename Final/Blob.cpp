@@ -146,6 +146,29 @@ void Blob::calculate()
     }
 }
 
+float topRowsAverageX(int rows)
+{
+    float maxY = -1, ave, numPoints;
+    
+    for(int i = 0; i < points.size(); i++)
+    {
+        if(points[i].y > maxY || maxY == -1)
+            maxY = points[i].y;
+    }
+    
+    if(maxY == -1)
+        return -1;
+    else
+        for(int i = 0; i < points.size(); i++)
+            if(points[i].y >= maxY - rows)
+            {
+                avg += points[i].x;
+                numPoints++;
+            }
+    
+    return ave / numPoints;
+}
+
 
 // Method to return the average Point2i in all points.
 Point2i Blob::average()

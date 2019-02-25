@@ -9,21 +9,19 @@
 #include "UDP.h"
 #include "LookUp.h"
 
-
-std::string sendBackData(Blobs * blobs, std::string whichTarg);
-void calcHatchAndBall(Blobs * blobs);
-void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
-float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX);
-float facingAng(float height, float width);
-float angle(float widthPix, float numPixInCam, float camAngleX);
-void maintenance(cv::Mat * image, cv::String windowName);
-
 struct tapeLine // Struct to combine a white line with its
 {               // corresponding vision tape.
-    Blob tape;
-    Blob line;
+    Blob * tape;
+    Blob * line;
 };
 
+std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::string whichTarg);
+void findCombos(Blobs * blobs, std::vector<tapeLine> * combos);
+void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
+float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX);
+float facingAngle(float height, float width);
+float angle(float widthPix, float numPixInCam, float camAngleX);
+void maintenance(cv::Mat * image, cv::String windowName);
 
 // Values for simulation.
 const bool TEST = true,
@@ -56,13 +54,20 @@ const float TAPEAREA = 22,
             CAMAREA = 19200,
             DISTSCALE = 1.2;
 
+//For calculating combos.
+const float TAPEYPERCENT = 0.05,
+            TAPEXAWAY = 15,
+            TAPELINEAWAY = 10,
+            LINESTOPROWS = 3;
+
+
 
 int main(int argc, char * argv[])
 {
     cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter";
     cv::Mat * image = new cv::Mat();
     Blobs blobs(image, THRESH, DIST, AREA);
-    tapeLine * comboBlob;
+    std::vector<tapeLine> comboBlobs;
     //UDP udp(IP, PORT);
     double fps = 0, center;
 
@@ -117,12 +122,12 @@ int main(int argc, char * argv[])
             cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
 
         if(HATCH) // SPECIFIC TO 2019.
-            calcHatchAndBall(&blobs);
+            findCombos(& blobs, & comboBlobs);
         
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
         if(RIO)
-            std::cout << sendBackData(& blobs, "TAPE") << std::endl;
+            std::cout << sendBackData(& blobs, & comboBlobs, "TAPE") << std::endl;
 
         if(TEST) // Show image.
         {
@@ -145,16 +150,132 @@ int main(int argc, char * argv[])
 
 
 // Function to compile information to send over UDP.
-std::string sendBackData(Blobs * blobs, std::string whichTarg)
+std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::string whichTarg)
 {
     std::transform(whichTarg.begin(), whichTarg.end(), whichTarg.begin(), ::toupper);
     
     std::string sendBack;
     int i = 1;
     int ballTape = -1;
-    float dist, theta, phi;
+    float dist, ang, facingAng;
     
-  
+    if(combos->size() == 1) // There is only one pair of vision tape and line.
+    {
+        // distance
+        dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+        // angle.
+        ang = angle(combos->tape->getBlob(0)->width(), CAMAREA, CAMANGLEX);
+        // facing angle
+        facingAng = facingAngle(combos->line->getBlob(0)->height(), combos->line->getBlob(0)->width());
+        sendBack = dist + ", " + ang + ", " + facingAngle + ", 0, 0, 0";
+    }
+    else if(combos->size() == 2) // There is are two pairs of vision tape and line.
+    {
+        if(combos->at(0).tape->average(). y > combos->at(1).tape->average().y)
+        { // The first element is the ball port.
+            // distance
+            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            // angle
+            ang = angle(combos->tape->getBlob(0)->width(), CAMAREA, CAMANGLEX);
+            // facing angle
+            facingAng = facingAngle(combos->line->getBlob(0)->height(), combos->line->getBlob(0)->width());
+            sendBack += dist + ", " + ang + ", " + facingAngle;
+            // distance
+            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(1)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            // angle
+            ang = angle(combos->tape->getBlob(1)->width(), CAMAREA, CAMANGLEX);
+            // facing angle
+            facingAng = facingAngle(combos->line->getBlob(1)->height(), combos->line->getBlob(1)->width());
+            sendBack += dist + ", " + ang + ", " + facingAngle;
+        }
+        else if(combos->at(1).tape->average(). y > combos->at(0).tape->average().y)
+        { // The first element is the hatch port.
+            // distance
+            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(1)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            // angle
+            ang = angle(combos->tape->getBlob(1)->width(), CAMAREA, CAMANGLEX);
+            // facing angle
+            facingAng = facingAngle(combos->line->getBlob(1)->height(), combos->line->getBlob(1)->width());
+            sendBack += dist + ", " + ang + ", " + facingAngle;
+            // distance
+            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            // angle
+            ang = angle(combos->tape->getBlob(0)->width(), CAMAREA, CAMANGLEX);
+            // facing angle
+            facingAng = facingAngle(combos->line->getBlob(0)->height(), combos->line->getBlob(0)->width());
+            sendBack += dist + ", " + ang + ", " + facingAngle;
+        }
+        else
+        { // Your looking at the cargo ship.
+            // distance
+            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            // angle
+            ang = angle(combos->tape->getBlob(0)->width(), CAMAREA, CAMANGLEX);
+            // facing angle
+            facingAng = facingAngle(combos->line->getBlob(0)->height(), combos->line->getBlob(0)->width());
+            sendBack += dist + ", " + ang + ", " + facingAngle + ", 0, 0, 0";
+        }
+            
+    }
+    else if(combos->size() > 2) // There is are more than two pairs of
+    {                           // vision tape and line.
+        bool ballHatchFound = false;
+        for(int i = 0; i < blobs->getNumBlobs(); i++)
+            for(int j = i + 1; j < blobs->getNumBlobs(); j++)
+            {
+                if(combos->at(i).tape->average(). y > combos->at(j).tape->average().y)
+                { // i is ball, j is hatch.
+                    // distance
+                    dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    // angle
+                    ang = angle(combos->tape->getBlob(i)->width(), CAMAREA, CAMANGLEX);
+                    // facing angle
+                    facingAng = facingAngle(combos->line->getBlob(i)->height(), combos->line->getBlob(i)->width());
+                    sendBack += dist + ", " + ang + ", " + facingAngle;
+                    // distance
+                    dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(j)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    // angle
+                    ang = angle(combos->tape->getBlob(j)->width(), CAMAREA, CAMANGLEX);
+                    // facing angle
+                    facingAng = facingAngle(combos->line->getBlob(j)->height(), combos->line->getBlob(j)->width());
+                    sendBack += dist + ", " + ang + ", " + facingAngle;
+                    
+                    ballHatchFound = true;
+                }
+                else if (combos->at(j).tape->average().y > combos->at(i).tape->average().y)
+                { // j is ball, i is hatch.
+                    // distance
+                    dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(j)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    // angle
+                    ang = angle(combos->tape->getBlob(j)->width(), CAMAREA, CAMANGLEX);
+                    // facing angle
+                    facingAng = facingAngle(combos->line->getBlob(j)->height(), combos->line->getBlob(j)->width());
+                    sendBack += dist + ", " + ang + ", " + facingAngle;
+                    // distance
+                    dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    // angle
+                    ang = angle(combos->tape->getBlob(i)->width(), CAMAREA, CAMANGLEX);
+                    // facing angle
+                    facingAng = facingAngle(combos->line->getBlob(i)->height(), combos->line->getBlob(i)->width());
+                    sendBack += dist + ", " + ang + ", " + facingAngle;
+                    
+                    ballHatchFound = true;
+                }
+            }
+        
+        if(!ballHatchFound)
+        { // Your looking at the cargo ship.
+            // distance
+            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            // angle
+            ang = angle(combos->tape->getBlob(0)->width(), CAMAREA, CAMANGLEX);
+            // facing angle
+            facingAng = facingAngle(combos->line->getBlob(i)->height(), combos->line->getBlob(0)->width());
+            sendBack += dist + ", " + ang + ", " + facingAngle + ", 0, 0, 0";
+        }
+    }
+    else
+        sendBack = "0, 0, 0, 0, 0, 0";
     
     
 
@@ -164,54 +285,31 @@ std::string sendBackData(Blobs * blobs, std::string whichTarg)
 
 // Function for putting to vision targets in one Blob.
 // THIS FUNCTION IS SPECIFIC TO THE 2019 SEASON.
-void calcHatchAndBall(Blobs * blobs)
+void findCombos(Blobs * blobs, std::vector<tapeLine> * combos)
 {
-    int ball = -1;
-    // Calculate ball vision tape if there is any.
-    for(int i = 0; i < 6 && i < blobs->getNumBlobs(); i++)
-        if(blobs->getBlob(i)->average().y < HEIGHT / 2) // If blob is in the top half.
+    combos->clear();
+    
+    for(int i = 0; i < blobs->getNumBlobs(); i++) // Combine vision tapes.
+        for(int j = i + 1; j < blobs->getNumBlobs(); j++)
+            if(std::abs(blobs->getBlob(i)->average().y - blobs->getBlob(j)->average().y) < blobs->getBlob(i)->height() * TAPEYPERCENT && std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->average().x) < TAPEXAWAY)
+                blobs->combineBlobs(i, j);
+    
+    for(int i = 0; i < blobs->getNumBlobs(); i++) // Create tape line combos.
+        for(int j = i + 1; j < blobs->getNumBlobs(); j++)
         {
-            for(int j = i + 1; j < 6 && j < blobs->getNumBlobs(); j++)
+            if(std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->topRowsAverageX(LINESTOPROWS)) < TAPELINEAWAY)
             {
-                if(blobs->getBlob(j)->average().y < HEIGHT / 2)
-                    blobs->combineBlobs(i, j); // Combine blob(i) and blob(j) if
-            }                                  // blob(j) is also in the top half.
-            ball = i;
-        }
-    // Calculate the hatch vision tape.
-    for(int i = 0; i < 6 && i < blobs->getNumBlobs(); i++)
-        if(blobs->getBlob(i)->average().y > HEIGHT / 2)
-        {
-            if(ball == -1)
-            {
-                for(int j = i + 1; j < blobs->getNumBlobs(); j++)
-                    if(blobs->getBlob(j)->average().y > HEIGHT / 2)
-                        blobs->combineBlobs(i, j);
+                if(blobs->getBlob(i)->average().y < blobs->getBlob(j)->average().y)
+                    combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
+                else
+                    combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
             }
-            else
+            else if(std::abs(blobs->getBlob(i)->topRowsAverageX(LINESTOPROWS) - blobs->getBlob(j)->average().x) < TAPELINEAWAY)
             {
-                if(blobs->getBlob(i)->average().x < blobs->getBlob(ball)->average().x)
-                { // Check for and combine left side hatch vision tape.
-                    for(int j = i + 1; j < blobs->getNumBlobs(); j++)
-                    {
-                        if(blobs->getBlob(j)->average().y > HEIGHT / 2 && blobs->getBlob(j)->average().x < blobs->getBlob(ball)->average().x)
-                        {
-                            blobs->combineBlobs(i, j);
-                            if(ball > j)
-                                ball--;
-                        }
-                    }
-                }
-                else if(blobs->getBlob(i)->average().x > blobs->getBlob(ball)->average().x)
-                {// Check for and combine right side vision tape.
-                    for(int j = i + 1; j < blobs->getNumBlobs(); j++)
-                        if(blobs->getBlob(j)->average().y > HEIGHT / 2 && blobs->getBlob(j)->average().x > blobs->getBlob(ball)->average().x)
-                        {
-                            blobs->combineBlobs(i, j);
-                            if(ball > j)
-                                ball--;
-                        }
-                }
+                if(blobs->getBlob(i)->average().y < blobs->getBlob(j)->average().y)
+                    combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
+                else
+                    combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
             }
         }
 }
@@ -238,7 +336,7 @@ float angle(float widthPix, float numPixInCam, float camAngleX)
 
 /* Function to find the facing angle based off of the bounding box of the white
    lines in the 2019 frc game.*/
-float facingAng(float height, float width)
+float facingAngle(float height, float width)
 {
     const float radConv = 3.14159265 / 180;
     return atan((height / width) * radConv);
