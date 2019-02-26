@@ -1,7 +1,8 @@
 // Blob.cpp
 
-//#inlcude <vector>
+
 #include <iostream>
+#include <vector>
 #include "Blob.h"
 #include "Point2i.h"
 
@@ -146,7 +147,7 @@ void Blob::calculate()
     }
 }
 
-float topRowsAverageX(int rows)
+float Blob::topRowsAverageX(int rows)
 {
     float maxY = -1, ave, numPoints;
     
@@ -162,7 +163,7 @@ float topRowsAverageX(int rows)
         for(int i = 0; i < points.size(); i++)
             if(points[i].y >= maxY - rows)
             {
-                avg += points[i].x;
+                ave += points[i].x;
                 numPoints++;
             }
     

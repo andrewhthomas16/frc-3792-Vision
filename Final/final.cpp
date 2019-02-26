@@ -39,7 +39,7 @@ const double SATURATION = 1,// Values 0 - 1
 const int HEIGHT = 120,
           WIDTH = 160,
           THRESH = 5,
-          DIST = 1,
+          DIST = 5,
           AREA = 30;
 
 // Values for UDP
@@ -162,58 +162,58 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
     if(combos->size() == 1) // There is only one pair of vision tape and line.
     {
         // distance
-        dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+        dist = DISTSCALE * distance(TAPEAREA, combos->at(0).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
         // angle.
-        ang = angle(combos->tape->getBlob(0)->width(), CAMAREA, CAMANGLEX);
+        ang = angle(combos->at(0).tape->width(), CAMAREA, CAMANGLEX);
         // facing angle
-        facingAng = facingAngle(combos->line->getBlob(0)->height(), combos->line->getBlob(0)->width());
-        sendBack = dist + ", " + ang + ", " + facingAngle + ", 0, 0, 0";
+        facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).line->width());
+        sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
     }
     else if(combos->size() == 2) // There is are two pairs of vision tape and line.
     {
         if(combos->at(0).tape->average(). y > combos->at(1).tape->average().y)
         { // The first element is the ball port.
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, combos->at(0).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->tape->getBlob(0)->width(), CAMAREA, CAMANGLEX);
+            ang = angle(combos->at(0).tape->width(), CAMAREA, CAMANGLEX);
             // facing angle
-            facingAng = facingAngle(combos->line->getBlob(0)->height(), combos->line->getBlob(0)->width());
-            sendBack += dist + ", " + ang + ", " + facingAngle;
+            facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).line->width());
+            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(1)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, combos->at(1).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->tape->getBlob(1)->width(), CAMAREA, CAMANGLEX);
+            ang = angle(combos->at(1).tape->width(), CAMAREA, CAMANGLEX);
             // facing angle
-            facingAng = facingAngle(combos->line->getBlob(1)->height(), combos->line->getBlob(1)->width());
-            sendBack += dist + ", " + ang + ", " + facingAngle;
+            facingAng = facingAngle(combos->at(1).line->height(), combos->at(1).line->width());
+            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
         }
         else if(combos->at(1).tape->average(). y > combos->at(0).tape->average().y)
         { // The first element is the hatch port.
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(1)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, combos->at(1).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->tape->getBlob(1)->width(), CAMAREA, CAMANGLEX);
+            ang = angle(combos->at(1).tape->width(), CAMAREA, CAMANGLEX);
             // facing angle
-            facingAng = facingAngle(combos->line->getBlob(1)->height(), combos->line->getBlob(1)->width());
-            sendBack += dist + ", " + ang + ", " + facingAngle;
+            facingAng = facingAngle(combos->at(1).line->height(), combos->at(1).line->width());
+            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, combos->at(1).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->tape->getBlob(0)->width(), CAMAREA, CAMANGLEX);
+            ang = angle(combos->at(1).tape->width(), CAMAREA, CAMANGLEX);
             // facing angle
-            facingAng = facingAngle(combos->line->getBlob(0)->height(), combos->line->getBlob(0)->width());
-            sendBack += dist + ", " + ang + ", " + facingAngle;
+            facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).line->width());
+            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
         }
         else
         { // Your looking at the cargo ship.
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, combos->at(1).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->tape->getBlob(0)->width(), CAMAREA, CAMANGLEX);
+            ang = angle(combos->at(0).tape->width(), CAMAREA, CAMANGLEX);
             // facing angle
-            facingAng = facingAngle(combos->line->getBlob(0)->height(), combos->line->getBlob(0)->width());
-            sendBack += dist + ", " + ang + ", " + facingAngle + ", 0, 0, 0";
+            facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).line->width());
+            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
         }
             
     }
@@ -226,39 +226,39 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
                 if(combos->at(i).tape->average(). y > combos->at(j).tape->average().y)
                 { // i is ball, j is hatch.
                     // distance
-                    dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    dist = DISTSCALE * distance(TAPEAREA, combos->at(i).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
-                    ang = angle(combos->tape->getBlob(i)->width(), CAMAREA, CAMANGLEX);
+                    ang = angle(combos->at(i).tape->width(), CAMAREA, CAMANGLEX);
                     // facing angle
-                    facingAng = facingAngle(combos->line->getBlob(i)->height(), combos->line->getBlob(i)->width());
-                    sendBack += dist + ", " + ang + ", " + facingAngle;
+                    facingAng = facingAngle(combos->at(i).line->height(), combos->at(i).line->width());
+                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
                     // distance
-                    dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(j)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    dist = DISTSCALE * distance(TAPEAREA, combos->at(j).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
-                    ang = angle(combos->tape->getBlob(j)->width(), CAMAREA, CAMANGLEX);
+                    ang = angle(combos->at(j).tape->width(), CAMAREA, CAMANGLEX);
                     // facing angle
-                    facingAng = facingAngle(combos->line->getBlob(j)->height(), combos->line->getBlob(j)->width());
-                    sendBack += dist + ", " + ang + ", " + facingAngle;
-                    
+                    facingAng = facingAngle(combos->at(j).line->height(), combos->at(j).line->width());
+                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
+
                     ballHatchFound = true;
                 }
                 else if (combos->at(j).tape->average().y > combos->at(i).tape->average().y)
                 { // j is ball, i is hatch.
                     // distance
-                    dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(j)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    ang = angle(combos->at(j).tape->width(), CAMAREA, CAMANGLEX);
                     // angle
                     ang = angle(combos->tape->getBlob(j)->width(), CAMAREA, CAMANGLEX);
                     // facing angle
-                    facingAng = facingAngle(combos->line->getBlob(j)->height(), combos->line->getBlob(j)->width());
-                    sendBack += dist + ", " + ang + ", " + facingAngle;
+                    facingAng = facingAngle(combos->at(j).line->height(), combos->at(j).line->width());
+                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
                     // distance
-                    dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(i)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    dist = DISTSCALE * distance(TAPEAREA, combos->at(i).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
-                    ang = angle(combos->tape->getBlob(i)->width(), CAMAREA, CAMANGLEX);
+                    ang = angle(combos->at(i).tape->width(), CAMAREA, CAMANGLEX);
                     // facing angle
-                    facingAng = facingAngle(combos->line->getBlob(i)->height(), combos->line->getBlob(i)->width());
-                    sendBack += dist + ", " + ang + ", " + facingAngle;
-                    
+                    facingAng = facingAngle(combos->at(j).line->height(), combos->at(j).line->width());
+                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
+
                     ballHatchFound = true;
                 }
             }
@@ -266,12 +266,12 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
         if(!ballHatchFound)
         { // Your looking at the cargo ship.
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, combos->tape->getBlob(0)->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, combos->at(0).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->tape->getBlob(0)->width(), CAMAREA, CAMANGLEX);
+            ang = angle(combos->at(0).tape->width(), CAMAREA, CAMANGLEX);
             // facing angle
-            facingAng = facingAngle(combos->line->getBlob(i)->height(), combos->line->getBlob(0)->width());
-            sendBack += dist + ", " + ang + ", " + facingAngle + ", 0, 0, 0";
+            facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).line->width());
+            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAngle);
         }
     }
     else
