@@ -42,11 +42,13 @@ public:
     void setImage(cv::Mat * _image);
     
 private:
-    void calcThreshold();
+    void calcThreshX();
+    void calcThreshY();
     void addPoints(Blob & blob, int col);
     void sortBlobs();
     const cv::Mat * image;
     std::vector<int> pointsX;
+    std::vector<int> pointsY;
     std::vector<Blob> blobs;
     double center;
     unsigned int minThresh, minDist, minArea, xCheck, yCheck;

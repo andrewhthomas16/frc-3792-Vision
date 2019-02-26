@@ -198,9 +198,9 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
             facingAng = facingAngle(combos->at(1).line->height(), combos->at(1).line->width());
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, combos->at(1).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, combos->at(0).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->at(1).tape->width(), CAMAREA, CAMANGLEX);
+            ang = angle(combos->at(0).tape->width(), CAMAREA, CAMANGLEX);
             // facing angle
             facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).line->width());
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
@@ -208,7 +208,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
         else
         { // Your looking at the cargo ship.
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, combos->at(1).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, combos->at(0).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
             ang = angle(combos->at(0).tape->width(), CAMAREA, CAMANGLEX);
             // facing angle
@@ -256,7 +256,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
                     // angle
                     ang = angle(combos->at(i).tape->width(), CAMAREA, CAMANGLEX);
                     // facing angle
-                    facingAng = facingAngle(combos->at(j).line->height(), combos->at(j).line->width());
+                    facingAng = facingAngle(combos->at(i).line->height(), combos->at(i).line->width());
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
 
                     ballHatchFound = true;
@@ -292,27 +292,24 @@ void findCombos(Blobs * blobs, std::vector<tapeLine> * combos)
     for(int i = 0; i < blobs->getNumBlobs(); i++) // Combine vision tapes.
         for(int j = i + 1; j < blobs->getNumBlobs(); j++)
             if(std::abs(blobs->getBlob(i)->average().y - blobs->getBlob(j)->average().y) < blobs->getBlob(i)->height() * TAPEYPERCENT && std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->average().x) < TAPEXAWAY)
-            {
                 blobs->combineBlobs(i, j);
-                std::cout << "hello";
-            }
     
-    for(int i = 0; i < blobs->getNumBlobs(); i++) // Create tape line combos.
+    for(int i = 0; i < blobs->getNumBlobs() - 1; i++) // Create tape line combos.
         for(int j = i + 1; j < blobs->getNumBlobs(); j++)
         {
             if(std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->topRowsAverageX(LINESTOPROWS)) < TAPELINEAWAY)
             {
                 if(blobs->getBlob(i)->average().y < blobs->getBlob(j)->average().y)
-                    combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
-                else
                     combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
+                else
+                    combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
             }
             else if(std::abs(blobs->getBlob(i)->topRowsAverageX(LINESTOPROWS) - blobs->getBlob(j)->average().x) < TAPELINEAWAY)
             {
                 if(blobs->getBlob(i)->average().y < blobs->getBlob(j)->average().y)
-                    combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
-                else
                     combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
+                else
+                    combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
             }
         }
 }

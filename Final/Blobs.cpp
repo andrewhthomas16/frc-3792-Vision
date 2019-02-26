@@ -36,15 +36,15 @@ Blobs::~Blobs()
 }
 
 
-/* Method to make a 2d array from a black and white image, where an element
-   is considered high when there are more than minThresh white pixels in a
-   colunm. */
-void Blobs::calcThreshold()
+/* Method to make a 2d array from the colunms of a black and white image,
+   where an elementis considered high when there are more than minThresh
+   white pixels in a colunm. */
+void Blobs::calcThreshX()
 {
     // Make sure there are just enough pointsX elements.
     pointsX.resize(image->cols);
 
-    // Reset the PointsX array to make sure all values are set to zero.
+    // Reset the pointsX array to make sure all values are set to zero.
     for(int i = 0; i < image->cols; i ++)
         pointsX[i] = 0;
     
@@ -65,11 +65,40 @@ void Blobs::calcThreshold()
 }
 
 
+/* Method to make a 2d array from the rows of a black and white image,
+ where an elementis considered high when there are more than minThresh
+ white pixels in a colunm. */
+void Blobs::calcThreshY()
+{
+    // Make sure there are just enough pointsY elements.
+    pointsY.resize(image->rows);
+    
+    // Reset the pointsY array to make sure all values are set to zero.
+    for(int i = 0; i < image->rows; i ++)
+        pointsY[i] = 0;
+    
+    // Loop through every pixel and check to see if it is white.
+    // If it is white add one to corresponding colunm element in pointsY.
+    for(int x = 0; x < image->cols; x++)
+        for(int y = 0; y < image->rows; y++)
+        {
+            cv::Vec3b color = image->at<uchar>(cv::Point(x, y));
+            if(color.val[0] >= 100)
+                pointsY[y] += 1;
+        }
+    
+    // Make sure the colunms are over the min threshold for a colunm.
+    for(int i = 0; i < pointsY.size(); i++)
+        if(pointsY[i] < minThresh)
+            pointsY[i] = 0;
+}
+
+
 // Method to find the center of a 2d array, where the array is defined by
 // clacThreshold().
 double Blobs::calcCenter()
 {
-    calcThreshold();
+    calcThreshX();
     
     int numElements = 0;
     center = 0;
@@ -92,31 +121,62 @@ double Blobs::calcCenter()
 void Blobs::calcBlobs()
 {
     blobs.clear();
-    calcThreshold();
+    calcThreshX();
+    calcThreshY();
+    std::vector<Point2i> interval;
     
-    int dist = 0;
-    bool newBlob = true;
+    for(int i = 0; i < pointsY.size(); i++) // Loop through rows.
+        if(pointsY[i] > 0) // Check to see if there is a blob/interval.
+        {
+            interval.push_back(Point2i());
+            interval[interval.size() - 1].x = i;
+            int dist = 0;
+            bool stop = false;
+            
+            for(i; i < pointsY.size() && !stop; i++) // Find where the
+            {                                        // blob/interval stops.
+                if(pointsY[i] == 0 && dist <= minDist) // There is nothing in this
+                    dist++;                            // colunm.
+                else if(pointsY[i] == 0 && dist > minDist) // min distance has been
+                {                                          // surpassed.
+                    stop = true;
+                    interval[interval.size() - 1].y = i - minDist;
+                }
+                else
+                    dist = 0;
+                
+                if(i == pointsY.size() - 1) // You are at the edge of the image.
+                {                           // This is the end of the interval.
+                    interval[interval.size() - 1].y = i;
+                    stop = true;
+                }
+            }
+        }
     
-    // Loop through 1D array.
-    for(int i = 0; i < pointsX.size(); i++)
-    {
-        if(pointsX[i] > 0 && newBlob) // Create a new Blob, other Blobs
-        {                             // are too far away.
-            blobs.push_back(Blob());
-            addPoints(blobs.at(blobs.size() - 1), i);
-            newBlob = false;
-        }
-        else if(pointsX[i] > 0 && !newBlob) // There is a Blob nearby, so add
-        {                                   // to that Blob.
-            addPoints(blobs.at(blobs.size() - 1), i);
-        }
-        else if(pointsX[i] == 0 && !newBlob) // There is nothing to be added
-            dist++;                          // to a Blob, so add one to dist.
-        
-        if(dist >= minDist) // Check to see if a new Blob need to be made
-        {                   // next time pointsX[i] > 0.
-            newBlob = true;
-            dist = 0;
+    for(int i = 0; i < interval.size(); i++) // Loop through intervals to find
+    {                                        // all the blobs on the interval.
+        int dist = 0;
+        bool newBlob = true;
+        for(int x = interval[i].x; x < interval[i].y; x++)
+        {
+            if(pointsX[i] > 0 && newBlob) // Create a new Blob, other Blobs
+            {                             // are too far away.
+                blobs.push_back(Blob());
+                addPoints(blobs.at(blobs.size() - 1), i);
+                newBlob = false;
+            }
+            else if(pointsX[i] > 0 && !newBlob) // There is a Blob nearby, so add
+            {                                   // to that Blob.
+                addPoints(blobs.at(blobs.size() - 1), i);
+            }
+            else if(pointsX[i] == 0 && !newBlob) // There is nothing to be added
+                dist++;                          // to a Blob, so add one to dist.
+            
+            if(dist >= minDist) // Check to see if a new Blob need to be made
+            {                   // next time pointsX[i] > 0.
+                newBlob = true;
+                dist = 0;
+            }
         }
     }
 
