@@ -292,7 +292,10 @@ void findCombos(Blobs * blobs, std::vector<tapeLine> * combos)
     for(int i = 0; i < blobs->getNumBlobs(); i++) // Combine vision tapes.
         for(int j = i + 1; j < blobs->getNumBlobs(); j++)
             if(std::abs(blobs->getBlob(i)->average().y - blobs->getBlob(j)->average().y) < blobs->getBlob(i)->height() * TAPEYPERCENT && std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->average().x) < TAPEXAWAY)
+            {
                 blobs->combineBlobs(i, j);
+                std::cout << "hello";
+            }
     
     for(int i = 0; i < blobs->getNumBlobs(); i++) // Create tape line combos.
         for(int j = i + 1; j < blobs->getNumBlobs(); j++)
