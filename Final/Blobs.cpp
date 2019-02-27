@@ -36,7 +36,7 @@ Blobs::~Blobs()
 }
 
 
-/* Method to make a 2d array from the colunms of a black and white image,
+/* Method to make a 1d array from the colunms of a black and white image,
    where an elementis considered high when there are more than minThresh
    white pixels in a colunm. */
 void Blobs::calcThreshX()
@@ -65,7 +65,7 @@ void Blobs::calcThreshX()
 }
 
 
-/* Method to make a 2d array from the rows of a black and white image,
+/* Method to make a 1d array from the rows of a black and white image,
  where an elementis considered high when there are more than minThresh
  white pixels in a colunm. */
 void Blobs::calcThreshY()
@@ -94,17 +94,20 @@ void Blobs::calcThreshY()
 }
 
 
+/* Method to return the number of white pixels in a col when you bound the y values
+   of the colunm to a start and end value. */
 int Blobs::calcThreshInt(Point2i interval, int col)
 {
     int numPix = 0;
     
-    for(int y = interval.x; y < interval.y; y++)
+    for(int y = interval.x; y < interval.y; y++) // Loop through the interval.
     {
         cv::Vec3b color = image->at<uchar>(cv::Point(col, y));
-        if(color.val[0] >= 100)
-            numPix += 1;
+        if(color.val[0] >= 100) // Check to see if the pixel (col, y) is white.
+            numPix++;
     }
     
+    // Make sure the number of white pixels found is over the min treshold.
     if(numPix < minThresh)
         numPix = 0;
     
@@ -139,7 +142,6 @@ double Blobs::calcCenter()
 void Blobs::calcBlobs()
 {
     blobs.clear();
-    calcThreshX();
     calcThreshY();
     std::vector<Point2i> interval;
     
@@ -151,26 +153,28 @@ void Blobs::calcBlobs()
             int dist = 0;
             bool stop = false;
             
-            for(i; i < pointsY.size() && !stop; i++) // Find where the
-            {                                        // blob/interval stops.
-                if(pointsY[i] == 0 && dist <= minDist) // There is nothing in this
+            for(int j = i + 1; j < pointsY.size() && !stop; j++) // Find where the
+            {                                                    // blob/interval stops.
+                if(pointsY[j] == 0 && dist <= minDist) // There is nothing in this
                     dist++;                            // colunm.
-                else if(pointsY[i] == 0 && dist > minDist) // min distance has been
+                else if(pointsY[j] == 0 && dist > minDist) // min distance has been
                 {                                          // surpassed.
                     stop = true;
-                    interval[interval.size() - 1].y = i - minDist;
+                    interval[interval.size() - 1].y = j - minDist;
                 }
                 else
                     dist = 0;
                 
                 if(i == pointsY.size() - 1) // You are at the edge of the image.
                 {                           // This is the end of the interval.
-                    interval[interval.size() - 1].y = i;
+                    interval[interval.size() - 1].y = j;
                     stop = true;
                 }
+                
+                i = j;
             }
         }
-    std::cout << "c" << std::endl;
+
     for(int i = 0; i < interval.size(); i++) // Loop through intervals to find
     {                                        // all the blobs on the interval.
         int dist = 0;
@@ -179,12 +183,11 @@ void Blobs::calcBlobs()
         {
             if(calcThreshInt(interval.at(i), x) > 0 && newBlob) // Create a new Blob, other Blobs are too far away.
             {
-                std::cout << "cool" << std::endl;
                 blobs.push_back(Blob());
                 addPoints(blobs.at(blobs.size() - 1), interval.at(i), x);
                 newBlob = false;
             }
-            else if(calcThreshInt(interval.at(i), i) > 0 && !newBlob) // There is a Blob nearby, so add to that Blob.
+            else if(calcThreshInt(interval.at(i), x) > 0 && !newBlob) // There is a Blob nearby, so add to that Blob.
             {
                 addPoints(blobs.at(blobs.size() - 1), interval.at(i), x);
             }
@@ -198,16 +201,13 @@ void Blobs::calcBlobs()
             }
         }
     }
-    std::cout << "d" << std::endl;
 
     for(int i = 0; i < blobs.size(); i++)
        	if(blobs.at(i).size() < minArea)
         {
-            std::cout << "a" << std::endl;
             blobs.erase(blobs.begin() + i);
             i--;
         }
-    std::cout << "e" << std::endl;
 
     sortBlobs(); // Sort blobs by array. Largest to smallest.
 }
