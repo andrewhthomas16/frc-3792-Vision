@@ -210,7 +210,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
             int index;
             for(int i = 0; i < combos->size(); i++)
             {
-                if(std::abs(combos->at(i)->tape->average().x - (WIDTH / 2)) < std::abs(combos->at(index)->tape->average().x - (WIDTH / 2)))
+                if(std::abs(combos->at(i).tape->average().x - (WIDTH / 2)) < std::abs(combos->at(index).tape->average().x - (WIDTH / 2)))
                     index = i;
             }
             
@@ -275,7 +275,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
             int index;
             for(int i = 0; i < combos->size(); i++)
             {
-                if(std::abs(combos->at(i)->tape->average().x - (WIDTH / 2)) < std::abs(combos->at(index)->tape->average().x - (WIDTH / 2)))
+                if(std::abs(combos->at(i).tape->average().x - (WIDTH / 2)) < std::abs(combos->at(index).tape->average().x - (WIDTH / 2)))
                     index = i;
             }
             
