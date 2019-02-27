@@ -38,8 +38,8 @@ const double SATURATION = 1,// Values 0 - 1
 // Values for calculating Blobs.
 const int HEIGHT = 120,
           WIDTH = 160,
-          THRESH = 5,
-          DIST = 1,
+          THRESH = 1,
+          DIST = 2,
           AREA = 10;
 
 // Values for UDP
