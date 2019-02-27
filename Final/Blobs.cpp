@@ -139,7 +139,6 @@ void Blobs::calcBlobs()
                     dist++;                            // colunm.
                 else if(pointsY[i] == 0 && dist > minDist) // min distance has been
                 {                                          // surpassed.
-                    std::cout << "cool" << std::endl;
                     stop = true;
                     interval[interval.size() - 1].y = i - minDist;
                 }
@@ -162,6 +161,7 @@ void Blobs::calcBlobs()
         {
             if(pointsX[i] > 0 && newBlob) // Create a new Blob, other Blobs
             {                             // are too far away.
+                std::cout << "cool" << std::endl;
                 blobs.push_back(Blob());
                 addPoints(blobs.at(blobs.size() - 1), i);
                 newBlob = false;
