@@ -40,7 +40,7 @@ const int HEIGHT = 120,
           WIDTH = 160,
           THRESH = 1,
           DIST = 2,
-          AREA = 10;
+          AREA = 1;
 
 // Values for UDP
 const char * IP = "10.37.92.43",
