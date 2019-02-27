@@ -177,18 +177,18 @@ void Blobs::calcBlobs()
         bool newBlob = true;
         for(int x = 0; x < image->cols; x++)
         {
-            if(calcThreshInt(interval.at(i), i) > 0 && newBlob) // Create a new Blob, other Blobs are too far away.
+            if(calcThreshInt(interval.at(i), x) > 0 && newBlob) // Create a new Blob, other Blobs are too far away.
             {
                 std::cout << "cool" << std::endl;
                 blobs.push_back(Blob());
-                addPoints(blobs.at(blobs.size() - 1), interval.at(i), i);
+                addPoints(blobs.at(blobs.size() - 1), interval.at(i), x);
                 newBlob = false;
             }
             else if(calcThreshInt(interval.at(i), i) > 0 && !newBlob) // There is a Blob nearby, so add to that Blob.
             {
-                addPoints(blobs.at(blobs.size() - 1), interval.at(i), i);
+                addPoints(blobs.at(blobs.size() - 1), interval.at(i), x);
             }
-            else if(calcThreshInt(interval.at(i), i) == 0 && !newBlob) // There is nothing to be added to a Blob, so add one to dist.
+            else if(calcThreshInt(interval.at(i), x) == 0 && !newBlob) // There is nothing to be added to a Blob, so add one to dist.
                 dist++;
             
             if(dist >= minDist) // Check to see if a new Blob need to be made
