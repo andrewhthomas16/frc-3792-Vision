@@ -316,16 +316,16 @@ void findCombos(Blobs * blobs, std::vector<tapeLine> * combos)
             if(std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->topRowsAverageX(LINESTOPROWS)) < TAPELINEAWAY)
             {
                 if(blobs->getBlob(i)->average().y < blobs->getBlob(j)->average().y)
-                    combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
-                else
                     combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
+                else
+                    combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
             }
             else if(std::abs(blobs->getBlob(i)->topRowsAverageX(LINESTOPROWS) - blobs->getBlob(j)->average().x) < TAPELINEAWAY)
             {
                 if(blobs->getBlob(i)->average().y < blobs->getBlob(j)->average().y)
-                    combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
-                else
                     combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
+                else
+                    combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
             }
         }
 }
