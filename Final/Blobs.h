@@ -44,7 +44,8 @@ public:
 private:
     void calcThreshX();
     void calcThreshY();
-    void addPoints(Blob & blob, int col);
+    void addPoints(Blob & blob, Point2i interval, int col);
+    int calcThreshInt(Point2i interval, int col);
     void sortBlobs();
     const cv::Mat * image;
     std::vector<int> pointsX;

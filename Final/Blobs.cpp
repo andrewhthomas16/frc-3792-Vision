@@ -94,6 +94,24 @@ void Blobs::calcThreshY()
 }
 
 
+int Blobs::calcThreshInt(Point2i interval, int col)
+{
+    int numPix = 0;
+    
+    for(int y = interval.x; y < interval.y; y++)
+    {
+        cv::Vec3b color = image->at<uchar>(cv::Point(col, y));
+        if(color.val[0] >= 100)
+            numPix += 1;
+    }
+    
+    if(numPix < minThresh)
+        numPix = 0;
+    
+    return numPix;
+}
+
+
 // Method to find the center of a 2d array, where the array is defined by
 // clacThreshold().
 double Blobs::calcCenter()
@@ -157,21 +175,21 @@ void Blobs::calcBlobs()
     {                                        // all the blobs on the interval.
         int dist = 0;
         bool newBlob = true;
-        for(int x = interval[i].x; x < interval[i].y; x++)
+        for(int x = 0; x < image->cols; x++)
         {
-            if(pointsX[i] > 0 && newBlob) // Create a new Blob, other Blobs
-            {                             // are too far away.
+            if(calcThreshInt(interval.at(i), i) > 0 && newBlob) // Create a new Blob, other Blobs are too far away.
+            {
                 std::cout << "cool" << std::endl;
                 blobs.push_back(Blob());
-                addPoints(blobs.at(blobs.size() - 1), i);
+                addPoints(blobs.at(blobs.size() - 1), interval.at(i), i);
                 newBlob = false;
             }
-            else if(pointsX[i] > 0 && !newBlob) // There is a Blob nearby, so add
-            {                                   // to that Blob.
-                addPoints(blobs.at(blobs.size() - 1), i);
+            else if(calcThreshInt(interval.at(i), i) > 0 && !newBlob) // There is a Blob nearby, so add to that Blob.
+            {
+                addPoints(blobs.at(blobs.size() - 1), interval.at(i), i);
             }
-            else if(pointsX[i] == 0 && !newBlob) // There is nothing to be added
-                dist++;                          // to a Blob, so add one to dist.
+            else if(calcThreshInt(interval.at(i), i) == 0 && !newBlob) // There is nothing to be added to a Blob, so add one to dist.
+                dist++;
             
             if(dist >= minDist) // Check to see if a new Blob need to be made
             {                   // next time pointsX[i] > 0.
@@ -213,9 +231,9 @@ void Blobs::combineBlobs(int i, int j)
 
 // Method to all points that are white and in image->col to blob.
 // This method helps calcBlobs().
-void Blobs::addPoints(Blob & blob, int col)
+void Blobs::addPoints(Blob & blob, Point2i interval, int col)
 {
-	for(int i = 0; i < image->rows; i++) // Loop through colunms.
+	for(int i = interval.x; i < interval.y; i++) // Loop through colunms.
 	{
 	    cv::Vec3b color = image->at<uchar>(cv::Point(col, i));
             if(color.val[0] >= 100) // Check to see if (col, i) is white.
