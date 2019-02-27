@@ -55,7 +55,7 @@ const float TAPEAREA = 22,
             DISTSCALE = 1.2;
 
 //For calculating combos.
-const float TAPEYPERCENT = 0.05,
+const float TAPEYPERCENT = 0.1,
             TAPEXAWAY = 40,
             TAPELINEAWAY = 10,
             LINESTOPROWS = 5;
