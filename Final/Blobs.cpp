@@ -170,7 +170,7 @@ void Blobs::calcBlobs()
                 }
             }
         }
-    
+    std::cout << "c" << std::endl;
     for(int i = 0; i < interval.size(); i++) // Loop through intervals to find
     {                                        // all the blobs on the interval.
         int dist = 0;
@@ -198,6 +198,7 @@ void Blobs::calcBlobs()
             }
         }
     }
+    std::cout << "d" << std::endl;
 
     for(int i = 0; i < blobs.size(); i++)
        	if(blobs.at(i).size() < minArea)
