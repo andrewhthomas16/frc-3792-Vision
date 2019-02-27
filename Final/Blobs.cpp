@@ -202,6 +202,7 @@ void Blobs::calcBlobs()
     for(int i = 0; i < blobs.size(); i++)
        	if(blobs.at(i).size() < minArea)
         {
+            std::cout << "a" << std::endl;
             blobs.erase(blobs.begin() + i);
             i--;
         }
