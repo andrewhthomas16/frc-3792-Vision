@@ -207,6 +207,7 @@ void Blobs::calcBlobs()
             blobs.erase(blobs.begin() + i);
             i--;
         }
+    std::cout << "e" << std::endl;
 
     sortBlobs(); // Sort blobs by array. Largest to smallest.
 }
