@@ -39,8 +39,8 @@ const double SATURATION = 1,// Values 0 - 1
 const int HEIGHT = 120,
           WIDTH = 160,
           THRESH = 5,
-          DIST = 5,
-          AREA = 30;
+          DIST = 1,
+          AREA = 10;
 
 // Values for UDP
 const char * IP = "10.37.92.43",
@@ -58,7 +58,7 @@ const float TAPEAREA = 22,
 const float TAPEYPERCENT = 0.05,
             TAPEXAWAY = 40,
             TAPELINEAWAY = 10,
-            LINESTOPROWS = 3;
+            LINESTOPROWS = 5;
 
 
 
@@ -110,7 +110,7 @@ int main(int argc, char * argv[])
         
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
-        filter(cv::Scalar(40, 10, 140), cv::Scalar(100, 255, 255), *image, *image);
+        filter(cv::Scalar(40, 0, 190), cv::Scalar(180, 255, 255), *image, *image);
         
         // Blur image to get rid of the bad data points.
         if(BLUR)
@@ -306,8 +306,10 @@ void findCombos(Blobs * blobs, std::vector<tapeLine> * combos)
     for(int i = 0; i < blobs->getNumBlobs(); i++) // Combine vision tapes.
         for(int j = i + 1; j < blobs->getNumBlobs(); j++)
             if(std::abs(blobs->getBlob(i)->average().y - blobs->getBlob(j)->average().y) < blobs->getBlob(i)->height() * TAPEYPERCENT && std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->average().x) < TAPEXAWAY)
-                blobs->combineBlobs(i, j);
-    
+{                
+blobs->combineBlobs(i, j);
+std::cout << "hello" << std::endl; 
+}   
     for(int i = 0; i < blobs->getNumBlobs() - 1; i++) // Create tape line combos.
         for(int j = i + 1; j < blobs->getNumBlobs(); j++)
         {
