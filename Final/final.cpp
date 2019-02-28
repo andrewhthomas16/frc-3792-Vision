@@ -38,7 +38,7 @@ const double SATURATION = 1,// Values 0 - 1
 // Values for calculating Blobs.
 const int HEIGHT = 120,
           WIDTH = 160,
-          THRESH = 10,
+          THRESH = 1,
           DIST = 5,
           AREA = 10;
 
@@ -55,10 +55,10 @@ const float TAPEAREA = 22,
             DISTSCALE = 1.2;
 
 //For calculating combos.
-const float TAPEYPERCENT = 0.1,
-            TAPEXAWAY = 40,
-            TAPELINEAWAY = 10,
-            LINESTOPROWS = 5;
+const float TAPEYPERCENT = 1,
+            TAPEXAWAY = 50,
+            TAPELINEAWAY = 50,
+            LINESTOPROWS = 2;
 
 
 
@@ -110,7 +110,7 @@ int main(int argc, char * argv[])
         
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
-        filter(cv::Scalar(40, 0, 190), cv::Scalar(180, 255, 255), *image, *image);
+        filter(cv::Scalar(35, 0, 187), cv::Scalar(171, 96, 255), *image, *image);
         
         // Blur image to get rid of the bad data points.
         if(BLUR)
@@ -303,8 +303,10 @@ void findCombos(Blobs * blobs, std::vector<tapeLine> * combos)
     for(int i = 0; i < blobs->getNumBlobs(); i++) // Combine vision tapes.
         for(int j = i + 1; j < blobs->getNumBlobs(); j++)
             if(std::abs(blobs->getBlob(i)->average().y - blobs->getBlob(j)->average().y) < blobs->getBlob(i)->height() * TAPEYPERCENT && std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->average().x) < TAPEXAWAY)
-                blobs->combineBlobs(i, j);
-    
+{                
+blobs->combineBlobs(i, j);
+std::cout << "hello" << std::endl;
+ }   
     for(int i = 0; i < blobs->getNumBlobs() - 1; i++) // Create tape line combos.
         for(int j = i + 1; j < blobs->getNumBlobs(); j++)
         {
@@ -314,14 +316,16 @@ void findCombos(Blobs * blobs, std::vector<tapeLine> * combos)
                     combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
                 else
                     combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
-            }
+	std::cout << "cool" << std::endl;            
+}
             else if(std::abs(blobs->getBlob(i)->topRowsAverageX(LINESTOPROWS) - blobs->getBlob(j)->average().x) < TAPELINEAWAY)
             {
                 if(blobs->getBlob(i)->average().y < blobs->getBlob(j)->average().y)
                     combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
                 else
                     combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
-            }
+		std::cout << "cool" << std::endl;
+}
         }
 }
 
