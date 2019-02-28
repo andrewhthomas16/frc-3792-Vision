@@ -164,7 +164,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
         // distance
         dist = DISTSCALE * distance(TAPEAREA, combos->at(0).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
         // angle.
-        ang = angle(combos->at(0).tape->width(), CAMAREA, CAMANGLEX);
+        ang = angle((WIDTH / 2) - combos->at(0).tape->average().x, WIDTH / 2, CAMANGLEX);
         // facing angle
         facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).line->width());
         sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
