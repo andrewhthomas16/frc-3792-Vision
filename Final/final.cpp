@@ -38,7 +38,7 @@ const double SATURATION = 1,// Values 0 - 1
 // Values for calculating Blobs.
 const int HEIGHT = 120,
           WIDTH = 160,
-          THRESH = 1,
+          THRESH = 3,
           DIST = 5,
           AREA = 10;
 
@@ -55,9 +55,9 @@ const float TAPEAREA = 22,
             DISTSCALE = 1.2;
 
 //For calculating combos.
-const float TAPEYPERCENT = 1,
-            TAPEXAWAY = 50,
-            TAPELINEAWAY = 50,
+const float TAPEYPERCENT = 0.5,
+            TAPEXAWAY = 35,
+            TAPELINEAWAY = 30,
             LINESTOPROWS = 2;
 
 
@@ -176,14 +176,14 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
             // distance
             dist = DISTSCALE * distance(TAPEAREA, combos->at(0).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->at(0).tape->width(), CAMAREA, CAMANGLEX);
+            ang = angle((WIDTH / 2) - combos->at(0).tape->average().x, WIDTH / 2, CAMANGLEX);
             // facing angle
             facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).line->width());
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng) + ", ";
             // distance
             dist = DISTSCALE * distance(TAPEAREA, combos->at(1).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->at(1).tape->width(), CAMAREA, CAMANGLEX);
+            ang = angle((WIDTH / 2) - combos->at(1).tape->average().x, WIDTH / 2, CAMANGLEX);
             // facing angle
             facingAng = facingAngle(combos->at(1).line->height(), combos->at(1).line->width());
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
@@ -193,14 +193,14 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
             // distance
             dist = DISTSCALE * distance(TAPEAREA, combos->at(1).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->at(1).tape->width(), CAMAREA, CAMANGLEX);
+            ang = angle((WIDTH / 2) - combos->at(1).tape->average().x, WIDTH / 2, CAMANGLEX);
             // facing angle
             facingAng = facingAngle(combos->at(1).line->height(), combos->at(1).line->width());
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng) + ", ";
             // distance
             dist = DISTSCALE * distance(TAPEAREA, combos->at(0).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->at(0).tape->width(), CAMAREA, CAMANGLEX);
+            ang = angle((WIDTH / 2) - combos->at(0).tape->average().x, WIDTH / 2, CAMANGLEX);
             // facing angle
             facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).line->width());
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
@@ -217,7 +217,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
             //distance
             dist = DISTSCALE * distance(TAPEAREA, combos->at(index).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->at(index).tape->width(), CAMAREA, CAMANGLEX);
+            ang = angle((WIDTH / 2) - combos->at(index).tape->average().x, WIDTH / 2, CAMANGLEX);
             // facing angle
             facingAng = facingAngle(combos->at(index).line->height(), combos->at(index).line->width());
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
@@ -235,14 +235,14 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
                     // distance
                     dist = DISTSCALE * distance(TAPEAREA, combos->at(i).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
-                    ang = angle(combos->at(i).tape->width(), CAMAREA, CAMANGLEX);
+                    ang = angle((WIDTH / 2) - combos->ati0).tape->average().x, WIDTH / 2, CAMANGLEX);
                     // facing angle
                     facingAng = facingAngle(combos->at(i).line->height(), combos->at(i).line->width());
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng) + ", ";
                     // distance
                     dist = DISTSCALE * distance(TAPEAREA, combos->at(j).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
-                    ang = angle(combos->at(j).tape->width(), CAMAREA, CAMANGLEX);
+                    ang = angle((WIDTH / 2) - combos->at(j).tape->average().x, WIDTH / 2, CAMANGLEX);
                     // facing angle
                     facingAng = facingAngle(combos->at(j).line->height(), combos->at(j).line->width());
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
@@ -254,14 +254,14 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
                     // distance
                     dist = DISTSCALE * distance(TAPEAREA, combos->at(j).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
-                    ang = angle(combos->at(j).tape->width(), CAMAREA, CAMANGLEX);
+                    ang = angle((WIDTH / 2) - combos->at(j).tape->average().x, WIDTH / 2, CAMANGLEX);
                     // facing angle
                     facingAng = facingAngle(combos->at(j).line->height(), combos->at(j).line->width());
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng) + ", ";
                     // distance
                     dist = DISTSCALE * distance(TAPEAREA, combos->at(i).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
-                    ang = angle(combos->at(i).tape->width(), CAMAREA, CAMANGLEX);
+                    ang = angle((WIDTH / 2) - combos->at(i).tape->average().x, WIDTH / 2, CAMANGLEX);
                     // facing angle
                     facingAng = facingAngle(combos->at(i).line->height(), combos->at(i).line->width());
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
@@ -282,7 +282,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
             //distance
             dist = DISTSCALE * distance(TAPEAREA, combos->at(index).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
-            ang = angle(combos->at(index).tape->width(), CAMAREA, CAMANGLEX);
+            ang = angle((WIDTH / 2) - combos->at(index).tape->average().x, WIDTH / 2, CAMANGLEX);
             // facing angle
             facingAng = facingAngle(combos->at(index).line->height(), combos->at(index).line->width());
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng) + ", 0, 0, 0";
@@ -303,10 +303,8 @@ void findCombos(Blobs * blobs, std::vector<tapeLine> * combos)
     for(int i = 0; i < blobs->getNumBlobs(); i++) // Combine vision tapes.
         for(int j = i + 1; j < blobs->getNumBlobs(); j++)
             if(std::abs(blobs->getBlob(i)->average().y - blobs->getBlob(j)->average().y) < blobs->getBlob(i)->height() * TAPEYPERCENT && std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->average().x) < TAPEXAWAY)
-{                
-blobs->combineBlobs(i, j);
-std::cout << "hello" << std::endl;
- }   
+                blobs->combineBlobs(i, j);
+    
     for(int i = 0; i < blobs->getNumBlobs() - 1; i++) // Create tape line combos.
         for(int j = i + 1; j < blobs->getNumBlobs(); j++)
         {
@@ -316,16 +314,14 @@ std::cout << "hello" << std::endl;
                     combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
                 else
                     combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
-	std::cout << "cool" << std::endl;            
-}
+            }
             else if(std::abs(blobs->getBlob(i)->topRowsAverageX(LINESTOPROWS) - blobs->getBlob(j)->average().x) < TAPELINEAWAY)
             {
                 if(blobs->getBlob(i)->average().y < blobs->getBlob(j)->average().y)
                     combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
                 else
                     combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
-		std::cout << "cool" << std::endl;
-}
+            }
         }
 }
 
@@ -354,7 +350,7 @@ float angle(float widthPix, float numPixInCam, float camAngleX)
 float facingAngle(float height, float width)
 {
     const float radConv = 3.14159265 / 180;
-    return atan((height / width) * radConv);
+    return atan((height / width) * radConv) / radConv;
 }
 
 

@@ -146,27 +146,27 @@ void Blobs::calcBlobs()
     std::vector<Point2i> interval;
     
     for(int i = 0; i < pointsY.size(); i++) // Loop through rows.
-        if(pointsY[i] > 0) // Check to see if there is a blob/interval.
-        {
+        if(pointsY[i] > 0)
+        { // Check to see if there is a blob/interval.
             interval.push_back(Point2i());
             interval[interval.size() - 1].x = i;
             int dist = 0;
             bool stop = false;
             
-            for(int j = i + 1; j < pointsY.size() && !stop; j++) // Find where the
-            {                                                    // blob/interval stops.
-                if(pointsY[j] == 0 && dist <= minDist) // There is nothing in this
-                    dist++;                            // colunm.
-                else if(pointsY[j] == 0 && dist > minDist) // min distance has been
-                {                                          // surpassed.
+            for(int j = i + 1; j < pointsY.size() && !stop; j++)
+            { // Find where the blob/interval stops.
+                if(pointsY[j] == 0 && dist <= minDist)
+                    dist++; // There is nothing in this colunm.
+                else if(pointsY[j] == 0 && dist > minDist
+                { // min distance has been surpassed.
                     stop = true;
                     interval[interval.size() - 1].y = j - minDist;
                 }
                 else
                     dist = 0;
                 
-                if(i == pointsY.size() - 1) // You are at the edge of the image.
-                {                           // This is the end of the interval.
+                if(i == pointsY.size() - 1)
+                { // You are at the edge of the image. End the interval here.
                     interval[interval.size() - 1].y = j;
                     stop = true;
                 }
@@ -218,12 +218,12 @@ void Blobs::combineBlobs(int i, int j)
 {
 	if(i < blobs.size() && j < blobs.size())
 	{
-		if(i < j)
+		if(i < j) // i is the lower element.
 		{
 			blobs.at(i) += blobs.at(j);
 			blobs.erase(blobs.begin() + j);
 		}
-		else if(j < i)
+		else if(j < i) // j is the lower element.
 		{
 			blobs.at(j) += blobs.at(i);
 			blobs.erase(blobs.begin() + i);
