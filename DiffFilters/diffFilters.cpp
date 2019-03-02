@@ -322,21 +322,12 @@ void findCombos(Blobs * blobsTape, Blobs * blobsLine, std::vector<tapeLine> * co
                 blobsTape->combineBlobs(i, j);
     
     for(int i = 0; i < blobsTape->getNumBlobs() - 1; i++) // Create tape line combos.
-        for(int j = i + 1; j < blobsTape->getNumBlobs(); j++)
+        for(int j = i + 1; j < blobsLine->getNumBlobs(); j++)
         {
-            if(std::abs(blobsTape->getBlob(i)->average().x - blobsTape->getBlob(j)->topRowsAverageX(LINESTOPROWS)) < TAPELINEAWAY)
+            if(std::abs(blobsTape->getBlob(i)->average().x - blobsLine->getBlob(j)->topRowsAverageX(LINESTOPROWS)) < TAPELINEAWAY)
             {
-                if(blobsTape->getBlob(i)->average().y < blobsTape->getBlob(j)->average().y)
-                    combos->push_back({ blobsTape->getBlob(i), blobsTape->getBlob(j) });
-                else
-                    combos->push_back({ blobsTape->getBlob(j), blobsTape->getBlob(i) });
-            }
-            else if(std::abs(blobsTape->getBlob(i)->topRowsAverageX(LINESTOPROWS) - blobsTape->getBlob(j)->average().x) < TAPELINEAWAY)
-            {
-                if(blobsTape->getBlob(i)->average().y < blobsTape->getBlob(j)->average().y)
-                    combos->push_back({ blobsTape->getBlob(i), blobsTape->getBlob(j) });
-                else
-                    combos->push_back({ blobsTape->getBlob(j), blobsTape->getBlob(i) });
+                if(blobsTape->getBlob(i)->average().y < blobsLine->getBlob(j)->average().y)
+                    combos->push_back({ blobsTape->getBlob(i), blobsLine->getBlob(j) });
             }
         }
 }
