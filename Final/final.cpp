@@ -52,13 +52,13 @@ const float TAPEAREA = 22,
             CAMANGLEY = 20.25,
             CAMANGLEX = 27,
             CAMAREA = 19200,
-            DISTSCALE = 0.7986;
+            DISTSCALE = 1;
 
 //For calculating combos.
-const float TAPEYPERCENT = 0.5,
+const float TAPEYPERCENT = 0.2,
             TAPEXAWAY = 35,
-            TAPELINEAWAY = 30,
-            LINESTOPROWS = 2;
+            TAPELINEAWAY = 20,
+            LINESTOPROWS = 5;
 
 
 

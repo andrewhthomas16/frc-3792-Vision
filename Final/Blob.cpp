@@ -100,28 +100,20 @@ void Blob::averageY()
 // Method to find the width of a blob in pixels.
 void Blob::calcWidth()
 {
-    /*int minX = 0, maxX = 0;
+    int minX = 0, maxX = 0;
     
     for(int i = 1; i < points.size(); i++)
     {
-        if(points[i].x < points[i].x)
+        if(points[i].x < points[maxX].x)
             minX = i;
-        if(points[i].x > points[i].x)
+        if(points[i].x > points[minX].x)
             maxX = i;
     }
     
     if(points[maxX].y > points[minX].y)
         wid = points[maxX].x - points[minX].x;
     else
-        wid = -1 * (points[maxX].x - points[minX].x);*/
-	float minX = -1, maxX = -1;
-    
-    for(int i = 1; i < points.size(); i++)
-    {
-        if(points[i].x < minX || minX == -1)
-            minX = points[i].x;
-        if(points[i].x > maxX || maxX == -1)
-            maxX = points[i].x;
+        wid = -1 * (points[maxX].x - points[minX].x);
     }
     
     wid = maxX - minX;
