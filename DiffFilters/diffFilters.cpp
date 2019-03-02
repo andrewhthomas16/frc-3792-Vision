@@ -1,4 +1,4 @@
-// final.cpp
+// diffFilters.cpp
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -15,8 +15,8 @@ struct tapeLine // Struct to combine a white line with its
     Blob * line;
 };
 
-std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::string whichTarg);
-void findCombos(Blobs * blobs, std::vector<tapeLine> * combos);
+std::string sendBackData(std::vector<tapeLine> * combos);
+void findCombos(Blobs * blobsTape, Blobs * blobsLine, std::vector<tapeLine> * combos);
 void filter(cv::Scalar lowerRange, cv::Scalar upperRange, cv::Mat & Inputimage, cv::Mat & outputImage);
 float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX);
 float facingAngle(float height, float width);
@@ -25,9 +25,8 @@ void maintenance(cv::Mat * image, cv::String windowName);
 
 // Values for simulation.
 const bool TEST = false,
-	       VIDEO = true,
-	       RIO = true,
-	       BLUR = false,
+           RIO = true,
+           BLUR = false,
            HATCH = true;
 
 // Values for the camera.
@@ -54,7 +53,7 @@ const float TAPEAREA = 22,
             CAMAREA = 19200,
             DISTSCALE = 1;
 
-//For calculating combos.
+// For calculating combos.
 const float TAPEYPERCENT = 0.2,
             TAPEXAWAY = 35,
             TAPELINEAWAY = 20,
@@ -68,24 +67,33 @@ const int MINHUETAPE = 25,
           MINVALTAPE = 178,
           MAXVALTAPE = 255;
 
+// Filters Line.
+const int MINHUELINE = 25,
+          MAXHUELINE = 97,
+          MINSATLINE = 20,
+          MAXSATLINE = 255,
+          MINVALLINE = 178,
+          MAXVALLINE = 255;
 
 
 int main(int argc, char * argv[])
 {
     cv::String windowNameRaw = "VideoFeedRaw", windowNameAfter = "VideoFeedAfter";
-    cv::Mat * image = new cv::Mat();
-    Blobs blobs(image, THRESH, DIST, AREA);
+    cv::Mat * imageTape = new cv::Mat();
+    cv::Mat * imageLine = new cv::Mat();
+    Blobs blobsTape(imageTape, THRESH, DIST, AREA);
+    Blobs blobsLine(imageLine, THRESH, DIST, AREA);
     std::vector<tapeLine> comboBlobs;
     UDP udp(IP, PORT);
     double fps = 0, center;
-
+    
     cv::VideoCapture cap(0);
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, HEIGHT);
     cap.set(cv::CAP_PROP_FRAME_WIDTH, WIDTH);
     cap.set(cv::CAP_PROP_SATURATION, SATURATION);
     cap.set(cv::CAP_PROP_BRIGHTNESS, BRIGHTNESS);
     cap.set(cv::CAP_PROP_CONTRAST, CONTRAST);
-
+    
     if(!cap.isOpened())
     {
         std::cout << "Video camera was not found." << std::endl;
@@ -96,56 +104,57 @@ int main(int argc, char * argv[])
         cv::namedWindow(windowNameRaw);
         cv::namedWindow(windowNameAfter);
     }
-
+    
     while(true)
     {
-	if(VIDEO)
-        cap >> *image;
-    else
-        *image = cv::imread("../frc-3792/Pictures/2019VisionImages/CargoSideStraightDark72in.jpg");
-
+        cap >> *imageTape;
+        cap >> *imageLine;
+        
         if(TEST)
-            cv::imshow(windowNameRaw, *image);
-
+            cv::imshow(windowNameRaw, *imageTape);
+        
         // Check for failure
-        if(image->empty())
+        if(imageTape->empty() || imageLine->empty())
         {
             std::cout << "Could not open or find the image" << std::endl;
             return -1;
         }
-
-        maintenance(image, windowNameAfter);
+        
+        maintenance(imageTape, windowNameAfter);
         
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
         filter(cv::Scalar(MINSATTAPE, MINHUETAPE, MINVALTAPE), cv::Scalar(MAXSATTAPE, MAXHUETAPE, MAXVALTAPE), *imageTape, *imageTape); // For tape.
+        filter(cv::Scalar(MINSATLINE, MINHUELINE, MINVALLINE), cv::Scalar(MAXSATLINE, MAXHUELINE, MAXVALLINE), *imageLine, *imageLine); // For line.
         
         // Blur image to get rid of the bad data points.
         if(BLUR)
-            cv::GaussianBlur(*image, *image, cv::Size(9, 9), 2, 2);
-
-        blobs.calcBlobs();
+            cv::GaussianBlur(*imageTape, *imageTape, cv::Size(9, 9), 2, 2);
+        
+        blobsTape.calcBlobs();
+        blobsLine.calcBlobs();
         
         if(TEST)
-            cv::putText(*image, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
-
+            cv::putText(*imageTape, std::to_string(CLOCKS_PER_SEC / (clock() - fps)), cv::Point2f(10, 10), cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
+        
         if(HATCH) // SPECIFIC TO 2019.
-            findCombos(& blobs, & comboBlobs);
+            findCombos(& blobsTape, & blobsLine, & comboBlobs);
         
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
         if(RIO)
-            udp.send(sendBackData(& blobs, & comboBlobs, "TAPE").c_str());
-
+            udp.send(sendBackData(& comboBlobs).c_str());
+        
         if(TEST) // Show image.
         {
-            cv::imshow(windowNameAfter, *image);
+            cv::imshow(windowNameAfter, *imageTape);
             if(cv::waitKey(1) == 27) break;
             fps = clock();
         }
     }
     
-    delete image;
+    delete imageTape;
+    delete imageLine;
     
     if (TEST) // Destroy window with the name windowName.
     {
@@ -158,7 +167,7 @@ int main(int argc, char * argv[])
 
 
 // Function to compile information to send over UDP.
-std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::string whichTarg)
+std::string sendBackData(std::vector<tapeLine> * combos)
 {
     std::string sendBack;
     int i = 1;
@@ -228,7 +237,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
             facingAng = facingAngle(combos->at(index).line->height(), combos->at(index).line->width());
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
         }
-            
+        
     }
     else if(combos->size() > 2) // There is are more than two pairs of
     {                           // vision tape and line.
@@ -252,7 +261,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
                     // facing angle
                     facingAng = facingAngle(combos->at(j).line->height(), combos->at(j).line->width());
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
-
+                    
                     ballHatchFound = true;
                 }
                 else if (combos->at(j).tape->average().y > combos->at(i).tape->average().y)
@@ -271,7 +280,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
                     // facing angle
                     facingAng = facingAngle(combos->at(i).line->height(), combos->at(i).line->width());
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
-
+                    
                     ballHatchFound = true;
                 }
             }
@@ -296,46 +305,46 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
     }
     else
         sendBack = "0, 0, 0, 0, 0, 0";
-
-	return sendBack;
+    
+    return sendBack;
 }
 
 
 // Function for putting to vision targets in one Blob.
 // THIS FUNCTION IS SPECIFIC TO THE 2019 SEASON.
-void findCombos(Blobs * blobs, std::vector<tapeLine> * combos)
+void findCombos(Blobs * blobsTape, Blobs * blobsLine, std::vector<tapeLine> * combos)
 {
     combos->clear();
     
-    for(int i = 0; i < blobs->getNumBlobs(); i++) // Combine vision tapes.
-        for(int j = i + 1; j < blobs->getNumBlobs(); j++)
-            if(std::abs(blobs->getBlob(i)->average().y - blobs->getBlob(j)->average().y) < blobs->getBlob(i)->height() * TAPEYPERCENT && std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->average().x) < TAPEXAWAY)
-                blobs->combineBlobs(i, j);
+    for(int i = 0; i < blobsTape->getNumBlobs(); i++) // Combine vision tapes.
+        for(int j = i + 1; j < blobsTape->getNumBlobs(); j++)
+            if(std::abs(blobsTape->getBlob(i)->average().y - blobsTape->getBlob(j)->average().y) < blobsTape->getBlob(i)->height() * TAPEYPERCENT && std::abs(blobsTape->getBlob(i)->average().x - blobsTape->getBlob(j)->average().x) < TAPEXAWAY)
+                blobsTape->combineBlobs(i, j);
     
-    for(int i = 0; i < blobs->getNumBlobs() - 1; i++) // Create tape line combos.
-        for(int j = i + 1; j < blobs->getNumBlobs(); j++)
+    for(int i = 0; i < blobsTape->getNumBlobs() - 1; i++) // Create tape line combos.
+        for(int j = i + 1; j < blobsTape->getNumBlobs(); j++)
         {
-            if(std::abs(blobs->getBlob(i)->average().x - blobs->getBlob(j)->topRowsAverageX(LINESTOPROWS)) < TAPELINEAWAY)
+            if(std::abs(blobsTape->getBlob(i)->average().x - blobsTape->getBlob(j)->topRowsAverageX(LINESTOPROWS)) < TAPELINEAWAY)
             {
-                if(blobs->getBlob(i)->average().y < blobs->getBlob(j)->average().y)
-                    combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
+                if(blobsTape->getBlob(i)->average().y < blobsTape->getBlob(j)->average().y)
+                    combos->push_back({ blobsTape->getBlob(i), blobsTape->getBlob(j) });
                 else
-                    combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
+                    combos->push_back({ blobsTape->getBlob(j), blobsTape->getBlob(i) });
             }
-            else if(std::abs(blobs->getBlob(i)->topRowsAverageX(LINESTOPROWS) - blobs->getBlob(j)->average().x) < TAPELINEAWAY)
+            else if(std::abs(blobsTape->getBlob(i)->topRowsAverageX(LINESTOPROWS) - blobsTape->getBlob(j)->average().x) < TAPELINEAWAY)
             {
-                if(blobs->getBlob(i)->average().y < blobs->getBlob(j)->average().y)
-                    combos->push_back({ blobs->getBlob(i), blobs->getBlob(j) });
+                if(blobsTape->getBlob(i)->average().y < blobsTape->getBlob(j)->average().y)
+                    combos->push_back({ blobsTape->getBlob(i), blobsTape->getBlob(j) });
                 else
-                    combos->push_back({ blobs->getBlob(j), blobs->getBlob(i) });
+                    combos->push_back({ blobsTape->getBlob(j), blobsTape->getBlob(i) });
             }
         }
 }
 
 
 /* Function to find the distance to an object given the height of the object
-   in inches, the hieght of the object in pixels, number of pixels in the
-   camera, and field of the view Y direction in degrees. */
+ in inches, the hieght of the object in pixels, number of pixels in the
+ camera, and field of the view Y direction in degrees. */
 float distance(float areaIn, float areaPix, float camArea, float camAngleY, float camAngleX)
 {
     const float radConv = 3.14159265 / 180;
@@ -344,7 +353,7 @@ float distance(float areaIn, float areaPix, float camArea, float camAngleY, floa
 
 
 /* Function to find the angle to an object given the distance to the object
-   the width in pixels, and the number of of pixels in the camera. */
+ the width in pixels, and the number of of pixels in the camera. */
 float angle(float widthPix, float numPixInCam, float camAngleX)
 {
     const float radConv = 3.14159265 / 180;
@@ -353,7 +362,7 @@ float angle(float widthPix, float numPixInCam, float camAngleX)
 
 
 /* Function to find the facing angle based off of the bounding box of the white
-   lines in the 2019 frc game.*/
+ lines in the 2019 frc game.*/
 float facingAngle(float height, float width)
 {
     const float radConv = 3.14159265 / 180;
