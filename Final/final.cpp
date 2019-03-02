@@ -24,7 +24,7 @@ float angle(float widthPix, float numPixInCam, float camAngleX);
 void maintenance(cv::Mat * image, cv::String windowName);
 
 // Values for simulation.
-const bool TEST = true,
+const bool TEST = false,
 	       VIDEO = true,
 	       RIO = true,
 	       BLUR = false,

@@ -77,7 +77,7 @@ void Blob::averageX()
     int avg = 0;
     for(int i = 0; i < points.size(); i++)
         avg += points.at(i).x;
-    if(points.size() > 0) 
+    if(points.size() > 0)
     	aveX = avg / points.size();
     else
         aveX = -1;
@@ -114,10 +114,7 @@ void Blob::calcWidth()
         wid = points[maxX].x - points[minX].x;
     else
         wid = -1 * (points[maxX].x - points[minX].x);
-    }
-    
-    wid = maxX - minX;
-}
+ }
 
 
 // Method to find the height of a blob in pixels.
