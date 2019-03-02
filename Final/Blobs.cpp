@@ -157,7 +157,7 @@ void Blobs::calcBlobs()
             { // Find where the blob/interval stops.
                 if(pointsY[j] == 0 && dist <= minDist)
                     dist++; // There is nothing in this colunm.
-                else if(pointsY[j] == 0 && dist > minDist
+                else if(pointsY[j] == 0 && dist > minDist)
                 { // min distance has been surpassed.
                     stop = true;
                     interval[interval.size() - 1].y = j - minDist;

@@ -7,6 +7,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <stdio.h>
+#include <chrono>
+#include <thread>
 
 int resolvehelper(const char* hostname, int family, const char* service, sockaddr_storage* pAddr);
 void error(std::string err);
@@ -20,7 +22,7 @@ int main(int argc, char * argv[])
 {
     int sock, result;
     struct sockaddr_in addr;
-    char * buff = "hello";
+    const char * buff = "100, 20, 45, 0, 0, 0";
     
     
     addr.sin_family = AF_INET;
@@ -35,7 +37,9 @@ int main(int argc, char * argv[])
     
     while(true) // Enter a loop.
     {
-        result = sendto(sock, buff, std::strlen(buff), 0, (struct sockaddr *) &addr, sizeof(addr));
+	std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+        result = sendto(sock, buff, 19, 0, (struct sockaddr *) &addr, sizeof(addr));
         if(result == -1)
             error("Error sending data.");
     }

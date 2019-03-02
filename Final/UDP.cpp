@@ -16,7 +16,7 @@ UDP::UDP(){}
 UDP::UDP(std::string _ip, std::string _port)
 {
     ip = const_cast<char *> (_ip.c_str());
-    port = const_cast<char *>(_port.c_str());
+    port = const_cast<char *> (_port.c_str());
     setUp();
 }
 

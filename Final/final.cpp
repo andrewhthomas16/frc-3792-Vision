@@ -52,7 +52,7 @@ const float TAPEAREA = 22,
             CAMANGLEY = 20.25,
             CAMANGLEX = 27,
             CAMAREA = 19200,
-            DISTSCALE = 1.2;
+            DISTSCALE = 0.7986;
 
 //For calculating combos.
 const float TAPEYPERCENT = 0.5,
@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
     cv::Mat * image = new cv::Mat();
     Blobs blobs(image, THRESH, DIST, AREA);
     std::vector<tapeLine> comboBlobs;
-    //UDP udp(IP, PORT);
+    UDP udp(IP, PORT);
     double fps = 0, center;
 
     cv::VideoCapture cap(0);
@@ -110,7 +110,7 @@ int main(int argc, char * argv[])
         
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
-        filter(cv::Scalar(35, 0, 187), cv::Scalar(171, 96, 255), *image, *image);
+        filter(cv::Scalar(25, 20, 178), cv::Scalar(97, 255, 255), *image, *image);
         
         // Blur image to get rid of the bad data points.
         if(BLUR)
@@ -127,7 +127,7 @@ int main(int argc, char * argv[])
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
         if(RIO)
-            std::cout << sendBackData(& blobs, & comboBlobs, "TAPE") << std::endl;
+            udp.send(sendBackData(& blobs, & comboBlobs, "TAPE").c_str());
 
         if(TEST) // Show image.
         {
@@ -152,8 +152,6 @@ int main(int argc, char * argv[])
 // Function to compile information to send over UDP.
 std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::string whichTarg)
 {
-    std::transform(whichTarg.begin(), whichTarg.end(), whichTarg.begin(), ::toupper);
-    
     std::string sendBack;
     int i = 1;
     int ballTape = -1;
@@ -235,7 +233,7 @@ std::string sendBackData(Blobs * blobs, std::vector<tapeLine> * combos, std::str
                     // distance
                     dist = DISTSCALE * distance(TAPEAREA, combos->at(i).tape->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
-                    ang = angle((WIDTH / 2) - combos->ati0).tape->average().x, WIDTH / 2, CAMANGLEX);
+                    ang = angle((WIDTH / 2) - combos->at(0).tape->average().x, WIDTH / 2, CAMANGLEX);
                     // facing angle
                     facingAng = facingAngle(combos->at(i).line->height(), combos->at(i).line->width());
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng) + ", ";
@@ -342,7 +340,7 @@ float distance(float areaIn, float areaPix, float camArea, float camAngleY, floa
 float angle(float widthPix, float numPixInCam, float camAngleX)
 {
     const float radConv = 3.14159265 / 180;
-    return atan(tan(camAngleX * radConv) * (widthPix / numPixInCam)) / radConv;
+    return -1 * atan(tan(camAngleX * radConv) * (widthPix / numPixInCam)) / radConv;
 }
 
 
@@ -351,7 +349,7 @@ float angle(float widthPix, float numPixInCam, float camAngleX)
 float facingAngle(float height, float width)
 {
     const float radConv = 3.14159265 / 180;
-    return atan((height / width) * radConv) / radConv;
+    return atan(width / height) / radConv;
 }
 
 
