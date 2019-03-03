@@ -51,13 +51,16 @@ LookUp::LookUp(std::string fileName) // Constructor
 LookUp::~LookUp() {} // Deconstructor
 
 
-float LookUp::getVal(float x) const // Get the x value of the look up table.
+// Get the x value of the look up table. 0.0 is the default value
+float LookUp::getVal(float x) const
 {
     for(int i = 0; i < pointsX.size(); i++)
         if(pointsX[i] == x)
             return pointsY[i];
         else if(i < pointsX.size() - 1 && pointsX[i] < x && pointsX[i + 1] > x)
             return closestVal(x, pointsX[i], pointsX[i + 1], pointsY[i], pointsY[i + 1]);
+    
+    return 0.0;
 }
 
 

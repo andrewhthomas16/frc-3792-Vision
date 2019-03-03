@@ -118,7 +118,7 @@ int main(int argc, char * argv[])
         
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
-        filter(cv::Scalar(MINSATTAPE, MINHUETAPE, MINVALTAPE), cv::Scalar(MAXSATTAPE, MAXHUETAPE, MAXVALTAPE), *imageTape, *imageTape); // For tape.
+        filter(cv::Scalar(MINSATTAPE, MINHUETAPE, MINVALTAPE), cv::Scalar(MAXSATTAPE, MAXHUETAPE, MAXVALTAPE), *image, *image); // For tape.
         
         // Blur image to get rid of the bad data points.
         if(BLUR)
