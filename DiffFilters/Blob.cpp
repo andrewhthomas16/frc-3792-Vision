@@ -152,6 +152,30 @@ void Blob::calculate()
 
 float Blob::topRowsAverageX(int rows)
 {
+    float minY = -1, ave, numPoints;
+    
+    for(int i = 0; i < points.size(); i++)
+    {
+        if(points[i].y < minY || minY == -1)
+            minY = points[i].y;
+    }
+    
+    if(minY == -1)
+        return -1;
+    else
+        for(int i = 0; i < points.size(); i++)
+            if(points[i].y >= minY + rows)
+            {
+                ave += points[i].x;
+                numPoints++;
+            }
+    
+    return ave / numPoints;
+}
+
+
+float Blob::botRowsAverageX(int rows)
+{
     float maxY = -1, ave, numPoints;
     
     for(int i = 0; i < points.size(); i++)

@@ -32,6 +32,7 @@ public:
     void operator += (Blob arr);
 	int size();
     float topRowsAverageX(int rows);
+	float botRowsAverageX(int rows);
     
 private:
     void calculate();

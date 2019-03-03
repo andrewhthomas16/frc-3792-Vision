@@ -181,7 +181,7 @@ std::string sendBackData(std::vector<tapeLine> * combos)
         // angle.
         ang = angle((WIDTH / 2) - combos->at(0).tape->average().x, WIDTH / 2, CAMANGLEX);
         // facing angle
-        facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).line->width());
+        facingAng = facingAngle(combos->at(0).line->height(), combos->at(0).tape->topRowsAverageX(5) - combos->at(0).tape->botRowsAverageX(5));
         sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", " + std::to_string(facingAng);
     }
     else if(combos->size() == 2) // There is are two pairs of vision tape and line.
