@@ -24,7 +24,7 @@ float angle(float widthPix, float numPixInCam, float camAngleX);
 void maintenance(cv::Mat * image, cv::String windowName);
 
 // Values for simulation.
-const bool TEST = false,
+const bool TEST = true,
            RIO = true,
            BLUR = false,
            HATCH = true;
@@ -51,29 +51,29 @@ const float TAPEAREA = 22,
             CAMANGLEY = 20.25,
             CAMANGLEX = 27,
             CAMAREA = 19200,
-            DISTSCALE = 1;
+            DISTSCALE = 1.2;
 
 // For calculating combos.
 const float TAPEYPERCENT = 0.2,
             TAPEXAWAY = 35,
-            TAPELINEAWAY = 20,
+            TAPELINEAWAY = 15,
             LINESTOPROWS = 5;
 
 // Filters Tape.
-const int MINHUETAPE = 25,
-          MAXHUETAPE = 97,
-          MINSATTAPE = 20,
+const int MINHUETAPE = 70,
+          MAXHUETAPE = 100,
+          MINSATTAPE = 50,
           MAXSATTAPE = 255,
-          MINVALTAPE = 178,
+          MINVALTAPE = 185,
           MAXVALTAPE = 255;
 
 // Filters Line.
-const int MINHUELINE = 25,
-          MAXHUELINE = 97,
-          MINSATLINE = 20,
-          MAXSATLINE = 255,
-          MINVALLINE = 178,
-          MAXVALLINE = 255;
+const int MINHUELINE = 0,
+          MAXHUELINE = 180,
+          MINSATLINE = 0,
+          MAXSATLINE = 140,
+          MINVALLINE = 140,
+          MAXVALLINE = 180;
 
 
 int main(int argc, char * argv[])
@@ -124,8 +124,8 @@ int main(int argc, char * argv[])
         
         // Filter image based off of a lower and upper Range of color.
         // The ranges are H: 0 - 100,  S: 0 - 255,  V: 0 - 255.
-        filter(cv::Scalar(MINSATTAPE, MINHUETAPE, MINVALTAPE), cv::Scalar(MAXSATTAPE, MAXHUETAPE, MAXVALTAPE), *imageTape, *imageTape); // For tape.
-        filter(cv::Scalar(MINSATLINE, MINHUELINE, MINVALLINE), cv::Scalar(MAXSATLINE, MAXHUELINE, MAXVALLINE), *imageLine, *imageLine); // For line.
+        filter(cv::Scalar(MINHUETAPE, MINSATTAPE, MINVALTAPE), cv::Scalar(MAXHUETAPE, MAXSATTAPE, MAXVALTAPE), *imageTape, *imageTape); // For tape.
+        filter(cv::Scalar(MINHUELINE, MINSATLINE, MINVALLINE), cv::Scalar(MAXHUELINE, MAXSATLINE, MAXVALLINE), *imageLine, *imageLine); // For line.
         
         // Blur image to get rid of the bad data points.
         if(BLUR)
@@ -143,11 +143,11 @@ int main(int argc, char * argv[])
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
         if(RIO)
-            udp.send(sendBackData(& comboBlobs).c_str());
+            std::cout << sendBackData(& comboBlobs) << std::endl;
         
         if(TEST) // Show image.
         {
-            cv::imshow(windowNameAfter, *imageTape);
+            cv::imshow(windowNameAfter, *imageLine);
             if(cv::waitKey(1) == 27) break;
             fps = clock();
         }
@@ -320,9 +320,9 @@ void findCombos(Blobs * blobsTape, Blobs * blobsLine, std::vector<tapeLine> * co
         for(int j = i + 1; j < blobsTape->getNumBlobs(); j++)
             if(std::abs(blobsTape->getBlob(i)->average().y - blobsTape->getBlob(j)->average().y) < blobsTape->getBlob(i)->height() * TAPEYPERCENT && std::abs(blobsTape->getBlob(i)->average().x - blobsTape->getBlob(j)->average().x) < TAPEXAWAY)
                 blobsTape->combineBlobs(i, j);
-    
-    for(int i = 0; i < blobsTape->getNumBlobs() - 1; i++) // Create tape line combos.
-        for(int j = i + 1; j < blobsLine->getNumBlobs(); j++)
+
+    for(int i = 0; i < blobsTape->getNumBlobs(); i++) // Create tape line combos.
+        for(int j = 0; j < blobsLine->getNumBlobs(); j++)
         {
             if(std::abs(blobsTape->getBlob(i)->average().x - blobsLine->getBlob(j)->topRowsAverageX(LINESTOPROWS)) < TAPELINEAWAY)
             {

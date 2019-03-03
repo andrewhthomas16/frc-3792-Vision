@@ -14,8 +14,6 @@ const double SATURATION = 1,// Values 0 - 1
 int main(int argc, char * argv[])
 {
     cv::VideoCapture cap(0);
-    cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
-    cap.set(cv::CAP_PROP_AUTOFOCUS, 0);
     cap.set(cv::CAP_PROP_FRAME_WIDTH, 160);
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, 120);
     cap.set(cv::CAP_PROP_SATURATION, SATURATION);
