@@ -134,6 +134,53 @@ void Blob::calcHeight()
 }
 
 
+// Method to find the inverse slope.
+void Blob::slope()
+{
+    float minX = -1, maxX = -1, lastAveX = -1, lastAveY = -1, aveX, aveY;
+    int num = 0;
+    std::vector<std::vector<int>> p;
+    
+    for(int i = 0; i < points.size(); i++) // Find min and max vals.
+    {
+        if(points[i].y < minX || minX == -1)
+            minX = points[i].y;
+        if(points[i].y > maxX || maxX == -1)
+            maxX = points[i].y;
+    }
+    
+    p.resize(maxX - minX);
+    
+    for(int x = 0; x < p.size(); x++) // Add all the points the the respective
+    {                                 // x values/colunms.
+        for(int i = 0; i < points.size(); i++)
+        {
+            if(points[i].y == x + minX)
+                p[x].push_back(points[i].x);
+        }
+    }
+    
+    for(int x = 0; x < p.size(); x++)
+    {
+        for(int y = 0; y < p[x].size(); y++) // Find the average Y for an x value.
+        {
+            aveY += p[x][y];
+            aveX = x + minX;
+        }
+        aveY /= p[x].size();
+        
+        if(lastAveX != -1) // Find the slope if it is not the first value.
+            iSlope += (aveY - lastAveY) / (aveX - lastAveX);
+        
+        lastAveX = aveX;
+        lastAveY = aveY;
+        num++;
+    }
+    
+    iSlope /= num; // Find the average slope.
+}
+
+
 //Function to see if values need to be recalculated.
 void Blob::calculate()
 {
@@ -219,6 +266,14 @@ float Blob::height()
 {
     calculate();
     return hei;
+}
+
+
+// Method to return the inverse slope.
+float Blob::invSlope()
+{
+    calculate();
+    return iSlope;
 }
 
 

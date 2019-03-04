@@ -27,6 +27,7 @@ public:
     float area();
     float width();
     float height();
+    float invSlope();
     Point2i operator [] (int i);
     void operator = (Blob arr);
     void operator += (Blob arr);
@@ -40,7 +41,8 @@ private:
     void averageY();
     void calcWidth();
     void calcHeight();
+    void slope();
     std::vector<Point2i> points;
-    float aveX, aveY, wid, hei;
+    float aveX, aveY, wid, hei, iSlope;
     bool valsCalc;
 };
