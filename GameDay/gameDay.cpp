@@ -48,9 +48,7 @@ DISTSCALE = 1.2;
 
 // For calculating combos.
 const float TAPEYPERCENT = 0.2,
-TAPEXAWAY = 35,
-TAPELINEAWAY = 15,
-LINESTOPROWS = 5;
+TAPEXAWAY = 35;
 
 // Filters Tape.
 const int MINHUE = 70,
@@ -122,7 +120,7 @@ int main(int argc, char * argv[])
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
         if(RIO)
-            std::cout << sendBackData(& blobs) << std::endl;
+            udp.send(sendBackData(& blobs).c_str());
         
         if(TEST) // Show image.
         {
@@ -157,7 +155,7 @@ std::string sendBackData(Blobs * blobs)
         dist = DISTSCALE * distance(TAPEAREA, (*blobs)[0]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
         // angle.
         ang = angle((WIDTH / 2) - (*blobs)[0]->average().x, WIDTH / 2, CAMANGLEX);
-        sendBack += std::to_string(dist) + ", " + std::to_string(ang);
+        sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", 0, 0";
     }
     else if(blobs->size() == 2) // There is are two pairs of vision tape and line.
     {

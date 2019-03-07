@@ -51,7 +51,8 @@ LookUp::LookUp(std::string fileName) // Constructor
 LookUp::~LookUp() {} // Deconstructor
 
 
-// Get the x value of the look up table. 0.0 is the default value
+// Get the x value of the look up table. 0.0 is
+// the default return value.
 float LookUp::getVal(float x) const
 {
     for(int i = 0; i < pointsX.size(); i++)
