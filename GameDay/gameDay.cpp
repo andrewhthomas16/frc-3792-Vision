@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
     cap.set(cv::CAP_PROP_SATURATION, SATURATION);
     cap.set(cv::CAP_PROP_BRIGHTNESS, BRIGHTNESS);
     cap.set(cv::CAP_PROP_CONTRAST, CONTRAST);
-    
+
     if(!cap.isOpened())
     {
         std::cout << "Video camera was not found." << std::endl;

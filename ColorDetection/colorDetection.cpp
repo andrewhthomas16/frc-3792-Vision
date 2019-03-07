@@ -7,7 +7,7 @@ using namespace std;
 int main(int argv, char ** argc)
 {
     // Read the image file.
-    cv::Mat image = cv::imread("/home/student/Pictures/Example.jpg");
+    cv::Mat image = cv::imread("../Pictures/2019VisionImages/CargoSideStraightDark36in.jpg");
 
     // Check for failure
     if(image.empty())
@@ -30,7 +30,7 @@ int main(int argv, char ** argc)
     cv::Mat mask;
 
      // Create an upper and lower scalar to filter colors.
-    cv::Scalar lowerRange = Scalar(30, 10, 0), upperRange = Scalar(50, 360, 360);
+    cv::Scalar lowerRange = Scalar(0, 0, 105), upperRange = Scalar(100, 159, 155);
 
     if(lowerRange[0] > upperRange[0]) // If the range passes zero then extra
     {                                 // steps need to be taken to filter image.

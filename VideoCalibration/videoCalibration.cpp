@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
     while(true)
     {
         cap >> * image;
-        //*image = cv::imread("/home/student/Pictures/Example.jpg"); 
+        //*image = cv::imread("../Pictures/2019VisionImages/CargoSideStraightDark36in.jpg");
         
         if(image->empty())
         {
