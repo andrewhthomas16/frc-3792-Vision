@@ -1,4 +1,4 @@
-// gameDay.cpp
+// huntsville.cpp
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -39,7 +39,7 @@ const char * IP = "10.37.92.43",
 * PORT= "5800";
 
 // For calculating distance and angle.
-const float TAPEAREA = 22,
+const float TAPEAREA = 71.561899,
 BALLAREA = 176.714587,
 CAMANGLEY = 20.25,
 CAMANGLEX = 27,
@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
     cap.set(cv::CAP_PROP_SATURATION, SATURATION);
     cap.set(cv::CAP_PROP_BRIGHTNESS, BRIGHTNESS);
     cap.set(cv::CAP_PROP_CONTRAST, CONTRAST);
-
+    
     if(!cap.isOpened())
     {
         std::cout << "Video camera was not found." << std::endl;
@@ -152,7 +152,7 @@ std::string sendBackData(Blobs * blobs)
     if(blobs->size() == 1) // There is only one pair of vision tape and line.
     {
         // distance
-        dist = DISTSCALE * distance(TAPEAREA, (*blobs)[0]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+        dist = DISTSCALE * distance(TAPEAREA, (*blobs)[0]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
         // angle.
         ang = angle((WIDTH / 2) - (*blobs)[0]->average().x, WIDTH / 2, CAMANGLEX);
         sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", 0, 0, 0, 0";
@@ -162,12 +162,12 @@ std::string sendBackData(Blobs * blobs)
         if((*blobs)[0]->average().y > (*blobs)[0]->average().y)
         { // The first element is the ball port.
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[0]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[0]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
             ang = angle((WIDTH / 2) - (*blobs)[0]->average().x, WIDTH / 2, CAMANGLEX);
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[1]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[1]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
             ang = angle((WIDTH / 2) - (*blobs)[1]->average().x, WIDTH / 2, CAMANGLEX);
             sendBack += std::to_string(dist) + ", " + std::to_string(ang);
@@ -175,12 +175,12 @@ std::string sendBackData(Blobs * blobs)
         else if((*blobs)[1]->average().y > (*blobs)[0]->average().y)
         { // The first element is the hatch port.
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[1]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[1]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
             ang = angle((WIDTH / 2) - (*blobs)[1]->average().x, WIDTH / 2, CAMANGLEX);
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
             // distance
-            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[0]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[0]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
             ang = angle((WIDTH / 2) - (*blobs)[0]->average().x, WIDTH / 2, CAMANGLEX);
             sendBack += std::to_string(dist) + ", " + std::to_string(ang);
@@ -195,7 +195,7 @@ std::string sendBackData(Blobs * blobs)
             }
             
             //distance
-            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[index]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[index]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
             ang = angle((WIDTH / 2) - (*blobs)[index]->average().x, WIDTH / 2, CAMANGLEX);
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", 0, 0, 0, 0";
@@ -211,12 +211,12 @@ std::string sendBackData(Blobs * blobs)
                 if((*blobs)[i]->average(). y >= (*blobs)[j]->average().y)
                 { // i is ball, j is hatch.
                     // distance
-                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[i]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[i]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
                     ang = angle((WIDTH / 2) - (*blobs)[i]->average().x, WIDTH / 2, CAMANGLEX);
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                     // distance
-                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[j]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[j]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
                     ang = angle((WIDTH / 2) - (*blobs)[j]->average().x, WIDTH / 2, CAMANGLEX);
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang);
@@ -226,12 +226,12 @@ std::string sendBackData(Blobs * blobs)
                 else if ((*blobs)[j]->average().y > (*blobs)[i]->average().y)
                 { // j is ball, i is hatch.
                     // distance
-                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[j]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[j]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
                     ang = angle((WIDTH / 2) - (*blobs)[j]->average().x, WIDTH / 2, CAMANGLEX);
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
                     // distance
-                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[i]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[i]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
                     ang = angle((WIDTH / 2) - (*blobs)[i]->average().x, WIDTH / 2, CAMANGLEX);
                     sendBack += std::to_string(dist) + ", " + std::to_string(ang);
@@ -250,7 +250,7 @@ std::string sendBackData(Blobs * blobs)
             }
             
             //distance
-            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[index]->area(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[index]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
             ang = angle((WIDTH / 2) - (*blobs)[index]->average().x, WIDTH / 2, CAMANGLEX);
             sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", 0, 0, 0, 0";
@@ -330,3 +330,4 @@ void maintenance(cv::Mat * image, cv::String windowName)
     // Change the color space from BGR to HSV.
     cv::cvtColor(*image , *image, cv::COLOR_BGR2HSV);
 }
+
