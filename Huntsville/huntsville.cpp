@@ -159,20 +159,7 @@ std::string sendBackData(Blobs * blobs)
     }
     else if(blobs->size() == 2) // There is are two pairs of vision tape and line.
     {
-        if((*blobs)[0]->average().y > (*blobs)[0]->average().y)
-        { // The first element is the ball port.
-            // distance
-            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[0]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
-            // angle
-            ang = angle((WIDTH / 2) - (*blobs)[0]->average().x, WIDTH / 2, CAMANGLEX);
-            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
-            // distance
-            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[1]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
-            // angle
-            ang = angle((WIDTH / 2) - (*blobs)[1]->average().x, WIDTH / 2, CAMANGLEX);
-            sendBack += std::to_string(dist) + ", " + std::to_string(ang);
-        }
-        else if((*blobs)[1]->average().y > (*blobs)[0]->average().y)
+        if((*blobs)[0]->average().y > (*blobs)[1]->average().y)
         { // The first element is the hatch port.
             // distance
             dist = DISTSCALE * distance(TAPEAREA, (*blobs)[1]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
@@ -183,7 +170,20 @@ std::string sendBackData(Blobs * blobs)
             dist = DISTSCALE * distance(TAPEAREA, (*blobs)[0]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
             // angle
             ang = angle((WIDTH / 2) - (*blobs)[0]->average().x, WIDTH / 2, CAMANGLEX);
-            sendBack += std::to_string(dist) + ", " + std::to_string(ang);
+            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", 0, 0";
+        }
+        else if((*blobs)[1]->average().y > (*blobs)[0]->average().y)
+        { // The first element is the ball port.
+            // distance
+            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[0]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            // angle
+            ang = angle((WIDTH / 2) - (*blobs)[0]->average().x, WIDTH / 2, CAMANGLEX);
+            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+            // distance
+            dist = DISTSCALE * distance(TAPEAREA, (*blobs)[1]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
+            // angle
+            ang = angle((WIDTH / 2) - (*blobs)[1]->average().x, WIDTH / 2, CAMANGLEX);
+            sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", 0, 0";
         }
         else
         { // Your looking at the cargo ship.
@@ -209,32 +209,32 @@ std::string sendBackData(Blobs * blobs)
             for(int j = i + 1; j < blobs->size() && !ballHatchFound; j++)
             {
                 if((*blobs)[i]->average(). y >= (*blobs)[j]->average().y)
-                { // i is ball, j is hatch.
-                    // distance
-                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[i]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
-                    // angle
-                    ang = angle((WIDTH / 2) - (*blobs)[i]->average().x, WIDTH / 2, CAMANGLEX);
-                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                { // i is hatch, j is ball.
                     // distance
                     dist = DISTSCALE * distance(TAPEAREA, (*blobs)[j]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
                     ang = angle((WIDTH / 2) - (*blobs)[j]->average().x, WIDTH / 2, CAMANGLEX);
-                    sendBack += std::to_string(dist) + ", " + std::to_string(ang);
+                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                    // distance
+                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[i]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    // angle
+                    ang = angle((WIDTH / 2) - (*blobs)[i]->average().x, WIDTH / 2, CAMANGLEX);
+                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", 0, 0";
                     
                     ballHatchFound = true;
                 }
                 else if ((*blobs)[j]->average().y > (*blobs)[i]->average().y)
-                { // j is ball, i is hatch.
-                    // distance
-                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[j]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
-                    // angle
-                    ang = angle((WIDTH / 2) - (*blobs)[j]->average().x, WIDTH / 2, CAMANGLEX);
-                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                { // j is hatch, i is ball.
                     // distance
                     dist = DISTSCALE * distance(TAPEAREA, (*blobs)[i]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
                     // angle
                     ang = angle((WIDTH / 2) - (*blobs)[i]->average().x, WIDTH / 2, CAMANGLEX);
-                    sendBack += std::to_string(dist) + ", " + std::to_string(ang);
+                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", ";
+                    // distance
+                    dist = DISTSCALE * distance(TAPEAREA, (*blobs)[j]->boundArea(), CAMAREA, CAMANGLEY, CAMANGLEX);
+                    // angle
+                    ang = angle((WIDTH / 2) - (*blobs)[j]->average().x, WIDTH / 2, CAMANGLEX);
+                    sendBack += std::to_string(dist) + ", " + std::to_string(ang) + ", 0, 0";
                     
                     ballHatchFound = true;
                 }
