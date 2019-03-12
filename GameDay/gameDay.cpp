@@ -120,7 +120,7 @@ int main(int argc, char * argv[])
         // Send data back by getting string from sendBackData() and
         // converting result to char *.
         if(RIO)
-            udp.send(sendBackData(& blobs).c_str());
+            std::cout << sendBackData(& blobs) << std::endl;
         
         if(TEST) // Show image.
         {
