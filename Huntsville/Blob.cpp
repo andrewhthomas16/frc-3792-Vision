@@ -10,27 +10,27 @@
 // Constructors
 Blob::Blob()
 {
-    valsCalc = false;
+    calcFalse();
 }
 Blob::Blob(int size)
 {
     points.resize(size);
     
-    valsCalc = false;
+    calcFalse();
 }
 Blob::Blob(const Point2i point)
 {
     points.resize(1);
     points.at(1) = point;
     
-    valsCalc = false;
+    calcFalse();
 }
 Blob::Blob(const int x, const int y)
 {
     points.resize(1);
     points.at(1) = Point2i(x, y);
     
-    valsCalc = false;
+    calcFalse();
 }
 Blob::Blob(const Point2i pointArr[], int size)
 {
@@ -38,7 +38,7 @@ Blob::Blob(const Point2i pointArr[], int size)
     for(int i = 0; i < size; i++)
         points.at(i) = pointArr[i];
     
-    valsCalc = false;
+    calcFalse();
 }
 Blob::Blob(const Blob & copy)
 {
@@ -46,7 +46,7 @@ Blob::Blob(const Blob & copy)
     for(int i = 0; i < copy.points.size(); i++)
         points.at(i) = copy.points.at(i);
     
-    valsCalc = false;
+    calcFalse();
 }
 
 // Deconstructor
@@ -58,7 +58,7 @@ Blob::~Blob(){}
 void Blob::addPoint(const int x, const int y)
 {
     points.push_back(Point2i(x, y));
-    valsCalc = false;
+    calcFalse();
 }
 
 
@@ -67,7 +67,7 @@ void Blob::addPoint(const int x, const int y)
 void Blob::addPoint(const Point2i & var)
 {
     points.push_back(var);
-    valsCalc = false;
+    calcFalse();
 }
 
 
@@ -182,7 +182,7 @@ void Blob::slope()
 
 
 //Function to see if values need to be recalculated.
-void Blob::calculate()
+/*void Blob::calculate()
 {
     if(valsCalc)
         return;
@@ -195,7 +195,7 @@ void Blob::calculate()
         
         valsCalc = true;
     }
-}
+}*/
 
 
 // Method to return the average x of the num rows near the top of a blob.
@@ -251,32 +251,56 @@ float Blob::botRowsAverageX(int rows)
 // Method to return the average Point2i in all points.
 Point2i Blob::average()
 {
-    calculate();
-    return Point2i(aveX, aveY);
+    if(calcAveX && calcAveY)
+        return Point2i(aveX, aveY);
+    else
+    {
+        if(!calcAveX)
+            averageX();
+        if(!calcAveY)
+            averageY();
+        
+        return Point2i(aveX, aveY);
+    }
 }
 
 
 // Method to return the width in pixels.
 float Blob::width()
 {
-    calculate();
-    return wid;
+    if(calcWid)
+        return wid;
+    else
+    {
+        calcWidth();
+        return wid;
+    }
 }
 
 
 // Method to return the height in pixels.
 float Blob::height()
 {
-    calculate();
-    return hei;
+    if(calcHeig)
+        return hei;
+    else
+    {
+        calcHeight();
+        return hei;
+    }
 }
 
 
 // Method to return the inverse slope.
 float Blob::invSlope()
 {
-    calculate();
-    return iSlope;
+    if(calcSlope)
+        return iSlope;
+    else
+    {
+        slope();
+        return iSlope;
+    }
 }
 
 
@@ -290,8 +314,7 @@ float Blob::area()
 // Method to return the area of a rectangle around a blob.
 float Blob::boundArea()
 {
-    calculate();
-    return wid * hei;
+    return width() * height();
 }
 
 
@@ -313,7 +336,7 @@ void Blob::operator = (Blob arr)
     aveY = arr.aveY;
     wid = arr.wid;
     hei = arr.hei;
-    valsCalc = arr.valsCalc;
+    calcFalse();
 }
 
 
@@ -322,7 +345,7 @@ void Blob::operator += (Blob arr)
 {
 	for(int i = 0; i < arr.points.size(); i++)
 		points.push_back(arr.points.at(i));
-    valsCalc = false;
+    calcFalse();
 }
 
 
@@ -330,4 +353,16 @@ void Blob::operator += (Blob arr)
 int Blob::size()
 {
     return points.size();
+}
+
+
+// Method to set all calculations to false. This means that
+// all these values will be calculated again.
+void Blob::calcFalse()
+{
+    calcAveX = false;
+    calcAveY = false;
+    calcWid = false;
+    calcHeig = false;
+    calcSlope = false;
 }

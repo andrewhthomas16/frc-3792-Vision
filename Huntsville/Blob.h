@@ -42,8 +42,9 @@ private:
     void calcWidth();
     void calcHeight();
     void slope();
-    void calculate();
+    //void calculate();
+    void calcFalse();
     std::vector<Point2i> points;
     float aveX, aveY, wid, hei, iSlope;
-    bool valsCalc;
+    bool calcAveX, calcAveY, calcWid, calcHeig, calcSlope;
 };
